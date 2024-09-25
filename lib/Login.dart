@@ -1,6 +1,7 @@
 import 'package:chilla_staff/Error.dart';
 import 'package:chilla_staff/design.dart';
 import 'package:flutter/material.dart';
+import 'staff_dashboard.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Login extends StatefulWidget {
@@ -122,7 +123,7 @@ class _LoginState extends State<Login> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => work(),
+                                      builder: (context) => StaffDashboard(),
                                     ),
                                   );
                                 }
