@@ -1,5 +1,6 @@
 import 'package:chilla_staff/Error.dart';
 import 'package:chilla_staff/design.dart';
+import 'package:chilla_staff/staffDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -122,7 +123,7 @@ class _LoginState extends State<Login> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => work(),
+                                      builder: (context) => StaffDashboard(),
                                     ),
                                   );
                                 }
