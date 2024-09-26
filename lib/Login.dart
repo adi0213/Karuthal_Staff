@@ -1,8 +1,12 @@
+import 'dart:convert';
+
+import 'package:chilla_staff/CreateAccount.dart';
 import 'package:chilla_staff/Error.dart';
 import 'package:chilla_staff/design.dart';
-import 'package:chilla_staff/staffDrawer.dart';
+import 'package:chilla_staff/StaffDashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -17,6 +21,48 @@ class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+
+  Future<void> _login() async {
+    const String url =
+        'http://104.237.9.211:8007/karuthal/api/v1/usermanagement/login';
+    final Map<String, dynamic> body = {
+      "username": _emailController.text,
+      "password": _passwordController.text,
+    };
+
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        final bearerToken = responseData['authtoken'];
+        print(bearerToken);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => StaffDashboard()),
+        );
+        return bearerToken;
+      } else {
+        ScaffoldMessenger.of(context)
+            .showCustomSnackBar(context, "ERROR\nInvalid Entry");
+        print('Login failed with status code: ${response.statusCode}');
+        print('Error message: ${response.body}');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showCustomSnackBar(context, "Network Error");
+      print('Error occurred: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +88,7 @@ class _LoginState extends State<Login> {
                                 .textTheme
                                 .headlineLarge
                                 ?.copyWith(
-                                  color: Color(0xFF22577A),
+                                  color: const Color(0xFF38A3A5),
                                   fontFamily:
                                       GoogleFonts.anekGurmukhi().fontFamily,
                                   fontWeight: FontWeight.bold,
@@ -59,9 +105,7 @@ class _LoginState extends State<Login> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your email';
-                            } /* else if (!value.contains('@')) {
-                              return 'Please enter a valid email';
-                            }*/
+                            }
                             return null;
                           },
                         ),
@@ -116,16 +160,11 @@ class _LoginState extends State<Login> {
                             height: 48.0,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF22577A),
+                                backgroundColor: const Color(0xFF38A3A5),
                               ),
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => StaffDashboard(),
-                                    ),
-                                  );
+                                  _login();
                                 }
                               },
                               child: Text(
@@ -153,20 +192,20 @@ class _LoginState extends State<Login> {
                         clipper: BottomWaveClipper(),
                         child: Container(
                           width: double.infinity,
-                          color: Color(0xFF38A3A5),
+                          color: const Color(0xFFC7F9F6),
                         ),
                       ),
                       Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          child: Column(children: [
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: Column(
+                          children: [
                             Image.asset(
-                              'assets/nurse.png',
-                              height: 225,
+                              'assets/oldcare2.png',
+                              height: 250,
                               fit: BoxFit.contain,
                             ),
-                            SizedBox(height: 20),
                             Center(
                               child: Row(
                                 mainAxisAlignment:
@@ -176,51 +215,52 @@ class _LoginState extends State<Login> {
                                     width: 175,
                                     child: const Divider(
                                       height: 1,
-                                      color: Colors.black,
+                                      color: Color(0x66666666),
                                     ),
                                   ),
                                   const Text(
                                     "Or",
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.black),
+                                        color: Color(0x66666666)),
                                   ),
                                   SizedBox(
                                     width: 175,
                                     child: const Divider(
                                       height: 1,
-                                      color: Colors.black,
+                                      color: Color(0x66666666),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            SizedBox(
-                              height: 20,
-                            ),
+                            SizedBox(height: 20),
                             Center(
                               child: GestureDetector(
                                 onTap: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => work()),
+                                      builder: (context) => CreateAccount(),
+                                    ),
                                   );
                                 },
                                 child: Text(
                                   'Create an account',
                                   style: TextStyle(
                                     fontSize: 20,
-                                    color: Colors.white,
+                                    color: Color(0xFF296685),
                                     fontFamily:
                                         GoogleFonts.robotoFlex().fontFamily,
                                     decoration: TextDecoration.underline,
-                                    decorationColor: Colors.white,
+                                    decorationColor: Color(0xFF296685),
                                   ),
                                 ),
                               ),
                             ),
-                          ])),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -292,5 +332,47 @@ class _LoginState extends State<Login> {
         return null;
       },
     );
+  }
+}
+
+// Extension for custom snack bar
+extension CustomSnackBar on ScaffoldMessengerState {
+  void showCustomSnackBar(BuildContext context, String text) {
+    OverlayState? overlayState = Overlay.of(context); // Get the overlay state
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        bottom: 50.0,
+        left: MediaQuery.of(context).size.width * 0.2,
+        width: MediaQuery.of(context).size.width * 0.6,
+        child: Material(
+          elevation: 5.0,
+          borderRadius: BorderRadius.circular(8.0),
+          child: Container(
+            height: 75,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Center(
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontSize: 22.0,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Insert the overlay entry into the overlay state
+    overlayState.insert(overlayEntry);
+
+    // Remove the overlay entry after a delay of 2 seconds
+    Future.delayed(const Duration(seconds: 4), () {
+      overlayEntry.remove();
+    });
   }
 }
