@@ -1,9 +1,7 @@
 import 'dart:convert';
-
-import 'package:chilla_staff/StaffRegistration.dart';
-import 'package:chilla_staff/Login.dart';
-import 'package:chilla_staff/design.dart';
-
+import '/StaffRegistration.dart';
+import '/Login.dart';
+import '/design.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -78,26 +76,26 @@ class _CreateAccountState extends State<CreateAccount> {
       );
 
       if (response.statusCode == 200) {
+        print(response.body);
         final responseData = json.decode(response.body);
         CreateAccount.bearerToken = responseData['authtoken'];
         print(CreateAccount.bearerToken);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) => Staffregistration(
+              builder: (context) => StaffRegistration(
                     email: _emailController.text,
                     token: CreateAccount.bearerToken,
+                    roles: jsonDecode(response.body)["assignedRoles"]
                   )),
         );
       } else {
-        ScaffoldMessenger.of(context)
-            .showCustomSnackBar(context, "ERROR\nInvalid Entry");
+        //ScaffoldMessenger.of(context).showCustomSnackBar(context, "ERROR\nInvalid Entry");
         print('Login failed with status code: ${response.statusCode}');
         print('Error message: ${response.body}');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showCustomSnackBar(context, "Network Error");
+      //ScaffoldMessenger.of(context).showCustomSnackBar(context, "Network Error");
       print('Error occurred: $e');
     }
   }
@@ -142,7 +140,7 @@ class _CreateAccountState extends State<CreateAccount> {
                                 .textTheme
                                 .headlineLarge
                                 ?.copyWith(
-                                  color: Color(0xFF38A3A5),
+                                  color: Color(0xFF57CC99),
                                   fontFamily:
                                       GoogleFonts.anekGurmukhi().fontFamily,
                                   fontWeight: FontWeight.bold,
@@ -217,7 +215,7 @@ class _CreateAccountState extends State<CreateAccount> {
                             height: 48.0,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF38A3A5),
+                                backgroundColor: Color(0xFF57CC99),
                               ),
                               onPressed: _signUp,
                               child: Text(
@@ -245,7 +243,7 @@ class _CreateAccountState extends State<CreateAccount> {
                         clipper: BottomWaveClipper(),
                         child: Container(
                           width: double.infinity,
-                          color: Color(0xFFC7F9F6),
+                          color: Color(0xFFC7F9DE),
                         ),
                       ),
                       Positioned(

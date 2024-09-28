@@ -1,22 +1,23 @@
 import 'dart:convert';
-
-import 'package:chilla_staff/StaffDashboard.dart';
+//import 'package:chilla_customer/CreateAccount.dart';
+import '/staffDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
-class Staffregistration extends StatefulWidget {
+class StaffRegistration extends StatefulWidget {
   final String email;
   final String token;
-  const Staffregistration(
-      {super.key, required this.email, required this.token});
+  final List roles;
+  const StaffRegistration({super.key, required this.email, required this.token, required this.roles});
 
   @override
-  State<Staffregistration> createState() => _StaffregistrationState();
+  State<StaffRegistration> createState() => _StaffRegistrationState();
 }
 
-class _StaffregistrationState extends State<Staffregistration> {
+class _StaffRegistrationState extends State<StaffRegistration> {
   final _formKey = GlobalKey<FormState>();
+
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _jobController = TextEditingController();
@@ -47,10 +48,32 @@ class _StaffregistrationState extends State<Staffregistration> {
       if (response.statusCode == 200) {
         // Registration successful, navigate to Dashboard
         debugPrint("Registraion Successfull");
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => StaffDashboard()),
-        );
+        //print(response.body);
+        print(jsonDecode(response.body));
+        if(widget.roles.contains('STUDENT')){
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => StaffDashboard(loginOption: 1,)),
+          );
+        }
+        else if(widget.roles.contains('Manager')){
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => StaffDashboard(loginOption: 3,)),
+          );
+        }
+        else{
+          print("Not a Student");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Color(0xFF57CC99),
+              content: Text(
+                'Not a Student',
+              style: TextStyle(color: Colors.black),
+              ),
+            ),
+          );
+        }
       } else {
         // Show error message if registration fails
         debugPrint(response.body);
@@ -90,12 +113,12 @@ class _StaffregistrationState extends State<Staffregistration> {
                     child: Column(
                       children: [
                         Text(
-                          "Staff Registration",
+                          "Customer Registration",
                           style: Theme.of(context)
                               .textTheme
                               .headlineLarge
                               ?.copyWith(
-                                color: const Color(0xFF38A3A5),
+                                color: const Color(0xFF57CC99),
                                 fontFamily:
                                     GoogleFonts.anekGurmukhi().fontFamily,
                                 fontWeight: FontWeight.normal,
@@ -195,7 +218,7 @@ class _StaffregistrationState extends State<Staffregistration> {
                       height: 48.0,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF38A3A5),
+                          backgroundColor: const Color(0xFF57CC99),
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
@@ -205,7 +228,7 @@ class _StaffregistrationState extends State<Staffregistration> {
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                backgroundColor: Color(0xFF38A3A5),
+                                backgroundColor: Color(0xFF57CC99),
                                 content: Text(
                                   'Please enter the required field',
                                   style: TextStyle(color: Colors.black),

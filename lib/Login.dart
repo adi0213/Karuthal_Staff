@@ -1,12 +1,11 @@
 import 'dart:convert';
-
-import 'package:chilla_staff/CreateAccount.dart';
-import 'package:chilla_staff/Error.dart';
-import 'package:chilla_staff/design.dart';
-import 'package:chilla_staff/StaffDashboard.dart';
+import 'package:chilla_staff/staffDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import '/CreateAccount.dart';
+import '/Error.dart';
+import '/design.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -43,24 +42,52 @@ class _LoginState extends State<Login> {
       );
 
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        final bearerToken = responseData['authtoken'];
-        print(bearerToken);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => StaffDashboard()),
-        );
-        return bearerToken;
+        print(response.body);
+        print(jsonDecode(response.body)["assignedRoles"].contains('STUDENT'));
+        if (jsonDecode(response.body)["assignedRoles"].contains('STUDENT')) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => StaffDashboard(loginOption: 1)),
+          );
+        } else if (jsonDecode(response.body)["assignedRoles"]
+            .contains('Manager')) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => StaffDashboard(loginOption: 3)),
+          );
+        } else if (jsonDecode(response.body)["assignedRoles"]
+            .contains('Customer')) {
+          print("Not a Staff");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Color(0xFF57CC99),
+              content: Text(
+                'Not a Staff',
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => StaffDashboard(
+                      loginOption: 4,
+                      roles: jsonDecode(response.body)["assignedRoles"],
+                    )),
+          );
+        }
       } else {
-        ScaffoldMessenger.of(context)
-            .showCustomSnackBar(context, "ERROR\nInvalid Entry");
         print('Login failed with status code: ${response.statusCode}');
         print('Error message: ${response.body}');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showCustomSnackBar(context, "Network Error");
       print('Error occurred: $e');
+      if (e is http.ClientException) {
+        print('Possible CORS or network error.');
+      }
     }
   }
 
@@ -88,7 +115,7 @@ class _LoginState extends State<Login> {
                                 .textTheme
                                 .headlineLarge
                                 ?.copyWith(
-                                  color: const Color(0xFF38A3A5),
+                                  color: const Color(0xFF57CC99),
                                   fontFamily:
                                       GoogleFonts.anekGurmukhi().fontFamily,
                                   fontWeight: FontWeight.bold,
@@ -105,7 +132,9 @@ class _LoginState extends State<Login> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your email';
-                            }
+                            } /* else if (!value.contains('@')) {
+                              return 'Please enter a valid email';
+                            }*/
                             return null;
                           },
                         ),
@@ -160,10 +189,11 @@ class _LoginState extends State<Login> {
                             height: 48.0,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF38A3A5),
+                                backgroundColor: const Color(0xFF57CC99),
                               ),
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
+                                  // Call the login function here
                                   _login();
                                 }
                               },
@@ -192,7 +222,7 @@ class _LoginState extends State<Login> {
                         clipper: BottomWaveClipper(),
                         child: Container(
                           width: double.infinity,
-                          color: const Color(0xFFC7F9F6),
+                          color: const Color(0xFFC7F9DE),
                         ),
                       ),
                       Positioned(
@@ -332,47 +362,5 @@ class _LoginState extends State<Login> {
         return null;
       },
     );
-  }
-}
-
-// Extension for custom snack bar
-extension CustomSnackBar on ScaffoldMessengerState {
-  void showCustomSnackBar(BuildContext context, String text) {
-    OverlayState? overlayState = Overlay.of(context); // Get the overlay state
-    OverlayEntry overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        bottom: 50.0,
-        left: MediaQuery.of(context).size.width * 0.2,
-        width: MediaQuery.of(context).size.width * 0.6,
-        child: Material(
-          elevation: 5.0,
-          borderRadius: BorderRadius.circular(8.0),
-          child: Container(
-            height: 75,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Center(
-              child: Text(
-                text,
-                style: TextStyle(
-                  color: Colors.redAccent,
-                  fontSize: 22.0,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    // Insert the overlay entry into the overlay state
-    overlayState.insert(overlayEntry);
-
-    // Remove the overlay entry after a delay of 2 seconds
-    Future.delayed(const Duration(seconds: 4), () {
-      overlayEntry.remove();
-    });
   }
 }
