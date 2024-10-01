@@ -1,4 +1,6 @@
-import 'package:chilla_staff/WelcomePage.dart';
+import 'package:chilla_staff/ManagersProfile.dart';
+
+//import 'package:chilla_staff/WelcomePage.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,7 +14,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const WelcomePage(),
+      //home: const WelcomePage(),
+      home: ProfilePage3(),
     );
   }
 }

@@ -1,6 +1,6 @@
-import 'package:chilla_staff/customerslist.dart';
-import 'package:chilla_staff/managerslist.dart';
-import 'package:chilla_staff/studentslist.dart';
+import 'package:chilla_staff/CustomersList.dart';
+import 'package:chilla_staff/ManagersList.dart';
+import 'package:chilla_staff/StudentsList.dart';
 import 'package:flutter/material.dart';
 
 class StaffDashboard extends StatelessWidget {
