@@ -1,3 +1,6 @@
+import 'package:chilla_staff/customerslist.dart';
+import 'package:chilla_staff/managerslist.dart';
+import 'package:chilla_staff/studentslist.dart';
 import 'package:flutter/material.dart';
 
 class StaffDashboard extends StatelessWidget {
@@ -37,18 +40,25 @@ class StaffDashboard extends StatelessWidget {
               Container(
                 height: 75,
                 child: DrawerHeader(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      RotatedBox(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    RotatedBox(
                         quarterTurns: 1,
-                        child: IconButton(onPressed: () => {Navigator.pop(context)},
-                        icon: Icon(Icons.menu, color: Colors.teal,))
-                      ),
-                      IconButton(onPressed: () => {}, icon: Icon(Icons.account_circle, color: Colors.teal,)),
-                    ],
-                  )
-                ),
+                        child: IconButton(
+                            onPressed: () => {Navigator.pop(context)},
+                            icon: Icon(
+                              Icons.menu,
+                              color: Colors.teal,
+                            ))),
+                    IconButton(
+                        onPressed: () => {},
+                        icon: Icon(
+                          Icons.account_circle,
+                          color: Colors.teal,
+                        )),
+                  ],
+                )),
               ),
               ListTile(
                 title: const Row(
@@ -70,7 +80,7 @@ class StaffDashboard extends StatelessWidget {
                 ),
                 textColor: Colors.teal,
                 iconColor: Colors.teal,
-                onTap: () { },
+                onTap: () {},
               ),
               Theme(
                 data: ThemeData().copyWith(dividerColor: Colors.transparent),
@@ -90,8 +100,20 @@ class StaffDashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: const Text('Users', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
-                        onTap: () { },
+                        title: const Text(
+                          'Student',
+                          style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.teal),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => studentslist(),
+                            ),
+                          );
+                        },
                         textColor: Colors.teal,
                       ),
                     ),
@@ -99,8 +121,20 @@ class StaffDashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: const Text('Customers', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
-                        onTap: () {},
+                        title: const Text(
+                          'Customers',
+                          style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.teal),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CustomersList(),
+                            ),
+                          );
+                        },
                         textColor: Colors.teal,
                       ),
                     ),
@@ -108,13 +142,24 @@ class StaffDashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: const Text('Managers', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
-                        onTap: () {},
+                        title: const Text(
+                          'Managers',
+                          style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.teal),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Managerslist(),
+                            ),
+                          );
+                        },
                         textColor: Colors.teal,
                       ),
                     ),
                   ],
-                  
                 ),
               ),
               Theme(
@@ -135,7 +180,12 @@ class StaffDashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: Text('Student Log', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
+                        title: Text(
+                          'Student Log',
+                          style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.teal),
+                        ),
                         onTap: () {},
                         textColor: Colors.teal,
                       ),
@@ -144,7 +194,12 @@ class StaffDashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: Text('Work History', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
+                        title: Text(
+                          'Work History',
+                          style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.teal),
+                        ),
                         onTap: () {},
                         textColor: Colors.teal,
                       ),
@@ -153,7 +208,12 @@ class StaffDashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: Text('Approval', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
+                        title: Text(
+                          'Approval',
+                          style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.teal),
+                        ),
                         onTap: () {},
                         textColor: Colors.teal,
                       ),
@@ -162,7 +222,12 @@ class StaffDashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: Text('Assign Services', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
+                        title: Text(
+                          'Assign Services',
+                          style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.teal),
+                        ),
                         onTap: () {},
                         textColor: Colors.teal,
                       ),
@@ -237,9 +302,8 @@ class StaffDashboard extends StatelessWidget {
                 ),
                 const SizedBox(height: 70),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: getBody(loginOption)
-                ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: getBody(loginOption)),
                 // Stack(
                 //   clipBehavior: Clip.none,
                 //   children: [
@@ -329,17 +393,16 @@ class StaffDashboard extends StatelessWidget {
     );
   }
 
-  Widget getBody(int op){
-    if (op==1){
+  Widget getBody(int op) {
+    if (op == 1) {
       return Text(
-        "This is student Dashboard",
+        "This is Managers Dashboard",
         style: TextStyle(
           color: Colors.teal[300],
           fontSize: 64,
         ),
       );
-    }
-    else if (op==2){
+    } else if (op == 2) {
       return Text(
         "This is customer Dashboard",
         style: TextStyle(
@@ -347,8 +410,7 @@ class StaffDashboard extends StatelessWidget {
           fontSize: 64,
         ),
       );
-    }
-    else if (op==3){
+    } else if (op == 3) {
       return Text(
         "This is manager Dashboard",
         style: TextStyle(
@@ -356,9 +418,9 @@ class StaffDashboard extends StatelessWidget {
           fontSize: 64,
         ),
       );
-    }
-    else{
-      return Text("Role - $roles",
+    } else {
+      return Text(
+        "Role - $roles",
         style: TextStyle(
           color: Colors.teal[300],
           fontSize: 64,
@@ -369,7 +431,7 @@ class StaffDashboard extends StatelessWidget {
 
   GestureDetector _approval() {
     return GestureDetector(
-      onTap:(){},
+        onTap: () {},
         child: Stack(
           children: [
             Container(
@@ -399,7 +461,8 @@ class StaffDashboard extends StatelessWidget {
                     ),
                   ),
                   const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -425,7 +488,7 @@ class StaffDashboard extends StatelessWidget {
               ),
             ),
           ],
-    ));
+        ));
   }
 }
 
