@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import '/CreateAccount.dart';
 import '/Error.dart';
 import '/design.dart';
+import 'ManagerDashboard.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -15,6 +16,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
@@ -35,27 +37,39 @@ class _LoginState extends State<Login> {
     };
 
     try {
+      setState(() {
+        _isLoading = true;
+      });
       final response = await http.post(
         Uri.parse(url),
         headers: headers,
         body: jsonEncode(body),
       );
+      setState(() {
+        _isLoading = false;
+      });
 
       if (response.statusCode == 200) {
         print(response.body);
         print(jsonDecode(response.body)["assignedRoles"].contains('STUDENT'));
         if (jsonDecode(response.body)["assignedRoles"].contains('STUDENT')) {
-          Navigator.pushReplacement(
+          _emailController.clear();
+          _passwordController.clear();
+          Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => StaffDashboard(loginOption: 1)),
           );
         } else if (jsonDecode(response.body)["assignedRoles"]
             .contains('Manager')) {
-          Navigator.pushReplacement(
+          _emailController.clear();
+          _passwordController.clear();
+          Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => StaffDashboard(loginOption: 3)),
+                builder: (context) => Managerdashboard(
+                      details: jsonDecode(response.body),
+                    )),
           );
         } else if (jsonDecode(response.body)["assignedRoles"]
             .contains('Customer')) {
@@ -82,6 +96,17 @@ class _LoginState extends State<Login> {
       } else {
         print('Login failed with status code: ${response.statusCode}');
         print('Error message: ${response.body}');
+        if (response.statusCode == 401) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Color(0xFF57CC99),
+              content: Text(
+                'Invalid Credentials',
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          );
+        }
       }
     } catch (e) {
       print('Error occurred: $e');
@@ -95,211 +120,225 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 30),
-                        Center(
-                          child: Text(
-                            'Log in',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineLarge
-                                ?.copyWith(
-                                  color: const Color(0xFF57CC99),
-                                  fontFamily:
-                                      GoogleFonts.anekGurmukhi().fontFamily,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 40,
-                                ),
-                          ),
-                        ),
-                        SizedBox(height: 30),
-                        _buildLabelText(context, "Email"),
-                        const SizedBox(height: 2),
-                        _buildProjectedTextFormField(
-                          controller: _emailController,
-                          isPassword: false,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your email';
-                            } /* else if (!value.contains('@')) {
-                              return 'Please enter a valid email';
-                            }*/
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _buildLabelText(context, "Password"),
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: Icon(
-                                    color: const Color(0xFF838181),
-                                    _isPasswordVisible
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
+      body: Stack(children: [
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 30),
+                          Center(
+                            child: Text(
+                              'Log in',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineLarge
+                                  ?.copyWith(
+                                    color: const Color(0xFF57CC99),
+                                    fontFamily:
+                                        GoogleFonts.anekGurmukhi().fontFamily,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 40,
                                   ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _isPasswordVisible = !_isPasswordVisible;
-                                    });
-                                  },
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          _buildLabelText(context, "Email"),
+                          const SizedBox(height: 2),
+                          _buildProjectedTextFormField(
+                            controller: _emailController,
+                            isPassword: false,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your email';
+                              } /* else if (!value.contains('@')) {
+                                  return 'Please enter a valid email';
+                                }*/
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _buildLabelText(context, "Password"),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      color: const Color(0xFF838181),
+                                      _isPasswordVisible
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _isPasswordVisible =
+                                            !_isPasswordVisible;
+                                      });
+                                    },
+                                  ),
+                                  Text(
+                                    _isPasswordVisible ? 'Unhide' : 'Hide',
+                                    style: TextStyle(
+                                      color: const Color(0xFF838181),
+                                      fontSize: 16,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          _buildPasswordField(),
+                          const SizedBox(height: 2),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => work(),
                                 ),
-                                Text(
-                                  _isPasswordVisible ? 'Unhide' : 'Hide',
+                              );
+                            },
+                            child:
+                                _buildLabelText(context, "Forgot Password ?"),
+                          ),
+                          SizedBox(height: 40),
+                          Center(
+                            child: SizedBox(
+                              height: 48.0,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF57CC99),
+                                ),
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    // Call the login function here
+                                    _login();
+                                  }
+                                },
+                                child: Text(
+                                  "Log in",
                                   style: TextStyle(
-                                    color: const Color(0xFF838181),
-                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    fontFamily:
+                                        GoogleFonts.signika().fontFamily,
                                   ),
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 2),
-                        _buildPasswordField(),
-                        const SizedBox(height: 2),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => work(),
-                              ),
-                            );
-                          },
-                          child: _buildLabelText(context, "Forgot Password ?"),
-                        ),
-                        SizedBox(height: 40),
-                        Center(
-                          child: SizedBox(
-                            height: 48.0,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF57CC99),
-                              ),
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  // Call the login function here
-                                  _login();
-                                }
-                              },
-                              child: Text(
-                                "Log in",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 25,
-                                  fontFamily: GoogleFonts.signika().fontFamily,
                                 ),
                               ),
                             ),
                           ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: constraints.maxHeight > 400
+                        ? constraints.maxHeight - 400
+                        : 0,
+                    child: Stack(
+                      children: [
+                        ClipPath(
+                          clipper: BottomWaveClipper(),
+                          child: Container(
+                            width: double.infinity,
+                            color: const Color(0xFFC7F9DE),
+                          ),
                         ),
+                        Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: Column(children: [
+                              Image.asset(
+                                'assets/oldcare2.png',
+                                height: 250,
+                                fit: BoxFit.contain,
+                              ),
+                              const Center(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    SizedBox(
+                                      width: 175,
+                                      child: Divider(
+                                        height: 1,
+                                        color: Color(0x66666666),
+                                      ),
+                                    ),
+                                    Text(
+                                      "Or",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0x66666666)),
+                                    ),
+                                    SizedBox(
+                                      width: 175,
+                                      child: Divider(
+                                        height: 1,
+                                        color: Color(0x66666666),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Center(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CreateAccount()),
+                                    );
+                                  },
+                                  child: Text(
+                                    'Create an account',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: const Color(0xFF296685),
+                                      fontFamily:
+                                          GoogleFonts.robotoFlex().fontFamily,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: const Color(0xFF296685),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ])),
                       ],
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: constraints.maxHeight > 400
-                      ? constraints.maxHeight - 400
-                      : 0,
-                  child: Stack(
-                    children: [
-                      ClipPath(
-                        clipper: BottomWaveClipper(),
-                        child: Container(
-                          width: double.infinity,
-                          color: const Color(0xFFC7F9DE),
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: Column(
-                          children: [
-                            Image.asset(
-                              'assets/oldcare2.png',
-                              height: 250,
-                              fit: BoxFit.contain,
-                            ),
-                            Center(
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  SizedBox(
-                                    width: 175,
-                                    child: const Divider(
-                                      height: 1,
-                                      color: Color(0x66666666),
-                                    ),
-                                  ),
-                                  const Text(
-                                    "Or",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0x66666666)),
-                                  ),
-                                  SizedBox(
-                                    width: 175,
-                                    child: const Divider(
-                                      height: 1,
-                                      color: Color(0x66666666),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            Center(
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CreateAccount(),
-                                    ),
-                                  );
-                                },
-                                child: Text(
-                                  'Create an account',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Color(0xFF296685),
-                                    fontFamily:
-                                        GoogleFonts.robotoFlex().fontFamily,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: Color(0xFF296685),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+                ],
+              ),
+            );
+          },
+        ),
+        loadingWidget()
+      ]),
     );
+  }
+
+  Widget loadingWidget() {
+    if (_isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    return SizedBox.shrink();
   }
 
   Widget _buildLabelText(BuildContext context, String labelText) {

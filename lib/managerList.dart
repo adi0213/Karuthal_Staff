@@ -3,34 +3,34 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class Studentslist extends StatefulWidget {
+class ManagerList extends StatefulWidget {
   final String token;
-  const Studentslist({super.key,required this.token});
+  const ManagerList({super.key,required this.token});
   @override
-  State<Studentslist> createState() => _StudentslistState();
+  State<ManagerList> createState() => _ManagerListState();
 }
 
-class _StudentslistState extends State<Studentslist> {
+class _ManagerListState extends State<ManagerList> {
 
-  late Future<List> Studentslist;
-  List students = [];
+  late Future<List> ManagerList;
+  List managers = [];
 
-  Future<List> getStudentDetails() async{
+  Future<List> getManagerDetails() async{
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${widget.token}'
     };
     final customerDetails = await http.get(
-      Uri.parse("http://104.237.9.211:8007/karuthal/api/v1/persona/students"),
+      Uri.parse("http://104.237.9.211:8007/karuthal/api/v1/persona/managers"),
       headers: headers,
     );
-    var customerDetailsList = jsonDecode(customerDetails.body);
-    return customerDetailsList;
+    var managerDetailsList = jsonDecode(customerDetails.body);
+    return managerDetailsList;
   }
 
   void initState(){
     super.initState();
-    Studentslist = getStudentDetails();
+    ManagerList = getManagerDetails();
   }
 
   @override
@@ -40,7 +40,7 @@ class _StudentslistState extends State<Studentslist> {
       appBar: AppBar(
         backgroundColor: Color(0xFF60CAD8),
         title: Text(
-          'Students List',
+          'Managers List',
           style: TextStyle(
             color: Colors.white,
           ),
@@ -97,7 +97,7 @@ class _StudentslistState extends State<Studentslist> {
 
   Widget getList() {
     return FutureBuilder<List>(
-      future: Studentslist,
+      future: ManagerList,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator()); 
@@ -106,32 +106,30 @@ class _StudentslistState extends State<Studentslist> {
           return Center(child: Text("Error: ${snapshot.error}"));
         }
         else if (snapshot.hasData) {
-          students = snapshot.data ?? []; 
-          if (students.isEmpty) {
+          managers = snapshot.data ?? []; 
+          if (managers.isEmpty) {
             return Center(child: Text("No customers available"));
           }
           return ListView.builder(
-            itemCount: students.length,
+            itemCount: managers.length,
             itemBuilder: (context, index) {
-              final student = students[index];
+              final manager = managers[index];
               return Column(
                 children: [
                   InkWell(
                     onTap: () => {
-                      print(student),
+                      print(manager),
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context)=> ProfilePage(details: student, userOption: 2))
+                        MaterialPageRoute(builder: (context)=> ProfilePage(details: manager, userOption: 3))
                       )
                     },
                     child: buildServiceItem(
-                      student['registeredUser']['username']!,
-                      student['registeredUser']['email']!,
-                      student['age']!,
-                      student['course']!,
+                      manager['registeredUser']['username']!,
+                      manager['registeredUser']['email']!,
                     ),
                   ),
-                  if (index < students.length - 1) Divider(height: 2),
+                  if (index < managers.length - 1) Divider(height: 2),
                 ],
               );
             },
@@ -172,8 +170,8 @@ class _StudentslistState extends State<Studentslist> {
   }
 
   Widget buildServiceItem(
-      String username, String email, int age, String course) {
-        print('$username ,$email ,$age ,$course');
+      String username, String email) {
+        print('$username ,$email');
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
       child: Row(
@@ -200,9 +198,6 @@ class _StudentslistState extends State<Studentslist> {
                       child: Text(' $email',
                           style: TextStyle(fontSize: 12, color: Colors.grey)),
                     ),
-                    SizedBox(width: 4),
-                    SizedBox(width: 4),
-                    Text('$age, $course',style: TextStyle(fontSize: 12, color: Colors.grey)),
                   ],
                 ),
                 SizedBox(height: 2),

@@ -1,11 +1,15 @@
 import 'package:chilla_staff/AssignServices.dart';
 import 'package:flutter/material.dart';
-import 'ManagerDashboard.dart';
+import 'customerList.dart';
+import 'studentslist.dart';
+import 'managerList.dart';
+import 'Profile.dart';
+import 'calendar.dart';
 
-class StaffDashboard extends StatelessWidget {
-  final int loginOption;
-  final List? roles;
-  const StaffDashboard({super.key, required this.loginOption, this.roles});
+class Managerdashboard extends StatelessWidget {
+  //final String token;
+  final Map<String, dynamic> details;
+  const Managerdashboard({super.key, required this.details});
 
   final manager_name = 'managerName!';
 
@@ -68,7 +72,9 @@ class StaffDashboard extends StatelessWidget {
                 ),
                 textColor: Colors.teal,
                 iconColor: Colors.teal,
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context);
+                },
               ),
               ListTile(
                 title: const Row(
@@ -79,7 +85,13 @@ class StaffDashboard extends StatelessWidget {
                 ),
                 textColor: Colors.teal,
                 iconColor: Colors.teal,
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              OwnProfilePage(details: details, userOption: 3)));
+                },
               ),
               Theme(
                 data: ThemeData().copyWith(dividerColor: Colors.transparent),
@@ -100,12 +112,20 @@ class StaffDashboard extends StatelessWidget {
                       child: ListTile(
                         minTileHeight: 15,
                         title: const Text(
-                          'Users',
+                          'Customers',
                           style: TextStyle(
                               decoration: TextDecoration.underline,
                               decorationColor: Colors.teal),
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          print("Customers");
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => CustomerList(
+                                        token: details['authtoken'],
+                                      )));
+                        },
                         textColor: Colors.teal,
                       ),
                     ),
@@ -114,12 +134,19 @@ class StaffDashboard extends StatelessWidget {
                       child: ListTile(
                         minTileHeight: 15,
                         title: const Text(
-                          'Customers',
+                          'Students',
                           style: TextStyle(
                               decoration: TextDecoration.underline,
                               decorationColor: Colors.teal),
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Studentslist(
+                                        token: details['authtoken'],
+                                      )));
+                        },
                         textColor: Colors.teal,
                       ),
                     ),
@@ -133,7 +160,14 @@ class StaffDashboard extends StatelessWidget {
                               decoration: TextDecoration.underline,
                               decorationColor: Colors.teal),
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ManagerList(
+                                        token: details['authtoken'],
+                                      )));
+                        },
                         textColor: Colors.teal,
                       ),
                     ),
@@ -240,7 +274,13 @@ class StaffDashboard extends StatelessWidget {
                 ),
                 textColor: Colors.teal,
                 iconColor: Colors.teal,
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HomeCalendarPage()));
+                },
               ),
               ListTile(
                 title: const Row(
@@ -251,7 +291,10 @@ class StaffDashboard extends StatelessWidget {
                 ),
                 textColor: Colors.teal,
                 iconColor: Colors.teal,
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
               ),
             ],
           ),
@@ -288,126 +331,19 @@ class StaffDashboard extends StatelessWidget {
                 const SizedBox(height: 70),
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: getBody(loginOption)),
-                // Stack(
-                //   clipBehavior: Clip.none,
-                //   children: [
-                //     Container(
-                //       height: 160,
-                //       color: const Color(0xFFDCFFF7),
-                //     ),
-                //     Positioned(
-                //       top: -30,
-                //       bottom: -30,
-                //       left: 80,
-                //       right: 80,
-                //       child: Container(
-                //         height: 210,
-                //         child: Column(
-                //           children: [
-                //             BuildViewBar(
-                //               identity: 'View Users',
-                //               baseColor: const Color(0xFF7FD4C9),
-                //               topColor: const Color(0xFF97E0D7),
-                //             ),
-                //             const SizedBox(height: 15),
-                //             BuildViewBar(
-                //               identity: 'View Customers',
-                //               baseColor: const Color(0xFF78DE90),
-                //               topColor: const Color(0xFF80ED99),
-                //             ),
-                //             const SizedBox(height: 15),
-                //             BuildViewBar(
-                //               identity: 'View Managers',
-                //               baseColor: const Color(0xFF49C38E),
-                //               topColor: const Color(0xFF57CC99),
-                //             ),
-                //           ],
-                //         ),
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(height: 50),
-                // Container(
-                //   padding: const EdgeInsets.symmetric(horizontal: 40),
-                //   child: Column(
-                //     children: [
-                //       Row(
-                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //         children: [
-                //           BuildSquareBox(
-                //             baseColor: const Color(0xFF5DC5D2),
-                //             tag: 'Student log',
-                //             topColor: const Color(0xFF72CDD9),
-                //           ),
-                //           BuildSquareBox(
-                //             baseColor: const Color(0xFF61CDB4),
-                //             tag: 'Work History',
-                //             topColor: const Color(0xFF72D9C1),
-                //           ),
-                //         ],
-                //       ),
-                //       const SizedBox(height: 30),
-                //       _approval(),
-                //       const SizedBox(height: 30),
-                //       Row(
-                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //         children: [
-                //           BuildSquareBox(
-                //             baseColor: const Color(0xFF6AD683),
-                //             tag: 'Assign Services',
-                //             topColor: const Color(0xFF78DE90),
-                //           ),
-                //           BuildSquareBox(
-                //             baseColor: const Color(0xFF40B180),
-                //             tag: 'Feedback',
-                //             topColor: const Color(0xFF49C38E),
-                //           ),
-                //         ],
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                // const SizedBox(height: 10),
+                    child: Text(
+                      "This is Manager Dashboard",
+                      style: TextStyle(
+                        color: Colors.teal[300],
+                        fontSize: 64,
+                      ),
+                    )),
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  Widget getBody(int op) {
-    if (op == 1) {
-      return Text(
-        "This is student Dashboard",
-        style: TextStyle(
-          color: Colors.teal[300],
-          fontSize: 64,
-        ),
-      );
-    } else if (op == 2) {
-      return Text(
-        "This is customer Dashboard",
-        style: TextStyle(
-          color: Colors.teal[300],
-          fontSize: 64,
-        ),
-      );
-    } else if (op == 3) {
-      return Managerdashboard(
-        details: {},
-      );
-    } else {
-      return Text(
-        "Role - $roles",
-        style: TextStyle(
-          color: Colors.teal[300],
-          fontSize: 64,
-        ),
-      );
-    }
   }
 
   GestureDetector _approval() {
