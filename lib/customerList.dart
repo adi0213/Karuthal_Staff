@@ -15,6 +15,8 @@ class _CustomerListState extends State<CustomerList> {
   late Future<List> customerList;
   List customers = [];
 
+  TextEditingController _searchQuery = TextEditingController();
+
   Future<List> getCustomerDetails() async{
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -83,7 +85,34 @@ class _CustomerListState extends State<CustomerList> {
         children: [
           Padding(
             padding: const EdgeInsets.all(12.0),
-            child: buildSearchBar(),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: TextField(
+                  controller: _searchQuery,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.search),
+                    hintText: "Search by Name",
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none
+                    )
+                  ),
+                  onChanged: searchPerson,
+                ),
+              ),
+            ),
           ),
           Divider(height: 2),
           Expanded(
@@ -142,38 +171,31 @@ class _CustomerListState extends State<CustomerList> {
     );
   }
 
-
-
-  Widget buildSearchBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          ),
-        ],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
-          children: [
-            Icon(Icons.search, color: Colors.grey),
-            SizedBox(width: 10),
-            Text('Search by Name', style: TextStyle(color: Colors.grey)),
-          ],
-        ),
-      ),
-    );
+  void searchPerson(String query) {
+    setState(() {
+      customerList = _filterCustomers(query);
+    });
+    print(query);
   }
 
-  Widget buildServiceItem(
-      String username, String email, String city, String country) {
-        print('$username ,$email ,$city ,$country');
+  Future<List> _filterCustomers(String query) async {
+    if (query.isEmpty) {
+      return await getCustomerDetails(); 
+    }
+
+    final filteredCustomers = (await getCustomerDetails()).where((customer) {
+      final username = customer['registeredUser']['username']!.toLowerCase();
+      final searchQuery = query.toLowerCase();
+      return username.contains(searchQuery);
+    }).toList();
+
+    return filteredCustomers;
+  }
+
+
+
+  Widget buildServiceItem(String username, String email, String city, String country) {
+    print('$username ,$email ,$city ,$country');
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
       child: Row(

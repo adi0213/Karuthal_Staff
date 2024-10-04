@@ -84,10 +84,9 @@ class _CreateAccountState extends State<CreateAccount> {
           context,
           MaterialPageRoute(
               builder: (context) => StaffRegistration(
-                    email: _emailController.text,
-                    token: CreateAccount.bearerToken,
-                    roles: jsonDecode(response.body)["assignedRoles"]
-                  )),
+                  email: _emailController.text,
+                  token: CreateAccount.bearerToken,
+                  roles: jsonDecode(response.body)["assignedRoles"])),
         );
       } else {
         //ScaffoldMessenger.of(context).showCustomSnackBar(context, "ERROR\nInvalid Entry");
@@ -140,7 +139,7 @@ class _CreateAccountState extends State<CreateAccount> {
                                 .textTheme
                                 .headlineLarge
                                 ?.copyWith(
-                                  color: Color(0xFF57CC99),
+                                  color: Color(0xFF38A3A5),
                                   fontFamily:
                                       GoogleFonts.anekGurmukhi().fontFamily,
                                   fontWeight: FontWeight.bold,
@@ -215,7 +214,7 @@ class _CreateAccountState extends State<CreateAccount> {
                             height: 48.0,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF57CC99),
+                                backgroundColor: Color(0xFF38A3A5),
                               ),
                               onPressed: _signUp,
                               child: Text(
@@ -243,7 +242,7 @@ class _CreateAccountState extends State<CreateAccount> {
                         clipper: BottomWaveClipper(),
                         child: Container(
                           width: double.infinity,
-                          color: Color(0xFFC7F9DE),
+                          color: Color(0xFFC7F9F6),
                         ),
                       ),
                       Positioned(
@@ -273,7 +272,7 @@ class _CreateAccountState extends State<CreateAccount> {
                                           Text(
                                             "Sign in with ",
                                             style: TextStyle(
-                                              color: const Color(0xFF57CC99),
+                                              color: Color(0xFF38A3A5),
                                               fontSize: 20,
                                               fontFamily: GoogleFonts.signika()
                                                   .fontFamily,

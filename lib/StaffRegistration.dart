@@ -9,7 +9,11 @@ class StaffRegistration extends StatefulWidget {
   final String email;
   final String token;
   final List roles;
-  const StaffRegistration({super.key, required this.email, required this.token, required this.roles});
+  const StaffRegistration(
+      {super.key,
+      required this.email,
+      required this.token,
+      required this.roles});
 
   @override
   State<StaffRegistration> createState() => _StaffRegistrationState();
@@ -17,7 +21,6 @@ class StaffRegistration extends StatefulWidget {
 
 class _StaffRegistrationState extends State<StaffRegistration> {
   final _formKey = GlobalKey<FormState>();
-
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _jobController = TextEditingController();
@@ -46,38 +49,37 @@ class _StaffRegistrationState extends State<StaffRegistration> {
       final response = await http.post(url, headers: headers, body: body);
 
       if (response.statusCode == 200) {
-        // Registration successful, navigate to Dashboard
-        debugPrint("Registraion Successfull");
-        //print(response.body);
+        debugPrint("Registration Successful");
         print(jsonDecode(response.body));
-        if(widget.roles.contains('STUDENT')){
+
+        if (widget.roles.contains('STUDENT')) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => StaffDashboard(loginOption: 1,)),
+            MaterialPageRoute(
+              builder: (context) => StaffDashboard(loginOption: 1),
+            ),
           );
-        }
-        else if(widget.roles.contains('Manager')){
+        } else if (widget.roles.contains('Manager')) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => StaffDashboard(loginOption: 3,)),
+            MaterialPageRoute(
+              builder: (context) => StaffDashboard(loginOption: 3),
+            ),
           );
-        }
-        else{
+        } else {
           print("Not a Student");
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              backgroundColor: Color(0xFF57CC99),
+              backgroundColor: Color(0xFF38A3A5),
               content: Text(
                 'Not a Student',
-              style: TextStyle(color: Colors.black),
+                style: TextStyle(color: Colors.black),
               ),
             ),
           );
         }
       } else {
-        // Show error message if registration fails
         debugPrint(response.body);
-        print(response.headers);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: Colors.red,
@@ -98,159 +100,171 @@ class _StaffRegistrationState extends State<StaffRegistration> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       body: SingleChildScrollView(
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 15),
-                  Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          "Customer Registration",
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineLarge
-                              ?.copyWith(
-                                color: const Color(0xFF57CC99),
-                                fontFamily:
-                                    GoogleFonts.anekGurmukhi().fontFamily,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 27.0,
-                              ),
-                        ),
-                        const SizedBox(height: 1),
-                        Text(
-                          "Fill out the form carefully for registration",
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(
-                                color: const Color(0xFF3A3A3A),
-                                fontFamily: GoogleFonts.robotoFlex().fontFamily,
-                                fontSize: 16.0,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  _buildLabelText(context, "Name"),
-                  const SizedBox(height: 8),
-                  _buildTextField(
-                    context,
-                    controller: _nameController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your Name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 30),
-                  _buildLabelText(context, "Job"),
-                  const SizedBox(height: 8),
-                  _buildTextField(
-                    context,
-                    controller: _jobController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your Job';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 30),
-                  _buildLabelText(context, "Address"),
-                  const SizedBox(height: 8),
-                  _buildTextField(
-                    context,
-                    controller: _addressController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your address';
-                      }
-                      return null;
-                    },
-                  ),
-                  _buildLabelText(context, "Permanent Address"),
-                  const SizedBox(height: 30),
-                  Row(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/bluebg.png',
+                  fit: BoxFit.fill,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
+                      const SizedBox(height: 15),
+                      Center(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildLabelText(context, "Residing Country"),
-                            const SizedBox(height: 8),
-                            _buildTextField(
-                              context,
-                              controller: _countryController,
+                            Text(
+                              "Staff Registration",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineLarge
+                                  ?.copyWith(
+                                    color: Color(0xFF38A3A5),
+                                    fontFamily:
+                                        GoogleFonts.anekGurmukhi().fontFamily,
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 27.0,
+                                  ),
+                            ),
+                            const SizedBox(height: 1),
+                            Text(
+                              "Fill out the form carefully for registration",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    color: const Color(0xFF3A3A3A),
+                                    fontFamily:
+                                        GoogleFonts.robotoFlex().fontFamily,
+                                    fontSize: 16.0,
+                                  ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildLabelText(context, "City"),
-                            const SizedBox(height: 8),
-                            _buildTextField(
-                              context,
-                              controller: _cityController,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 80),
-                  Center(
-                    child: SizedBox(
-                      height: 48.0,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF57CC99),
-                        ),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            print("Email: ${widget.email}");
-                            print("Token: ${widget.token}");
-                            _registerCustomer(); // Call the API
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Color(0xFF57CC99),
-                                content: Text(
-                                  'Please enter the required field',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ),
-                            );
+                      const SizedBox(height: 15),
+                      _buildLabelText(context, "Name"),
+                      const SizedBox(height: 8),
+                      _buildTextField(
+                        context,
+                        controller: _nameController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your Name';
                           }
+                          return null;
                         },
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 17.0,
+                      ),
+                      const SizedBox(height: 30),
+                      _buildLabelText(context, "Job"),
+                      const SizedBox(height: 8),
+                      _buildTextField(
+                        context,
+                        controller: _jobController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your Job';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 30),
+                      _buildLabelText(context, "Address"),
+                      const SizedBox(height: 8),
+                      _buildTextField(
+                        context,
+                        controller: _addressController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your address';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 30),
+                      _buildLabelText(context, "Permanent Address"),
+                      const SizedBox(height: 30),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildLabelText(context, "Residing Country"),
+                                const SizedBox(height: 8),
+                                _buildTextField(
+                                  context,
+                                  controller: _countryController,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildLabelText(context, "City"),
+                                const SizedBox(height: 8),
+                                _buildTextField(
+                                  context,
+                                  controller: _cityController,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 80),
+                      Center(
+                        child: SizedBox(
+                          height: 48.0,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF38A3A5),
+                            ),
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                print("Email: ${widget.email}");
+                                print("Token: ${widget.token}");
+                                _registerCustomer(); // Call the API
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    backgroundColor: Color(0xFF57CC99),
+                                    content: Text(
+                                      'Please enter the required field',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            child: const Text(
+                              "Sign Up",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 30),
+                    ],
                   ),
-                  const SizedBox(height: 30),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
@@ -274,7 +288,7 @@ class _StaffRegistrationState extends State<StaffRegistration> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Color(0xFF57CC99)),
+            borderSide: const BorderSide(color: Colors.blueAccent),
           ),
           errorStyle: const TextStyle(
             color: Colors.red,
