@@ -1,14 +1,14 @@
-import 'package:chilla_staff/AssignServices.dart';
 import 'package:flutter/material.dart';
 import 'customerList.dart';
 import 'studentslist.dart';
 import 'managerList.dart';
 import 'Profile.dart';
 import 'calendar.dart';
+import 'AssignServices.dart';
 
 class Managerdashboard extends StatelessWidget {
   //final String token;
-  final Map<String, dynamic> details;
+  final Map<String,dynamic> details;
   const Managerdashboard({super.key, required this.details});
 
   final manager_name = 'managerName!';
@@ -43,25 +43,18 @@ class Managerdashboard extends StatelessWidget {
               Container(
                 height: 75,
                 child: DrawerHeader(
-                    child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    RotatedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      RotatedBox(
                         quarterTurns: 1,
-                        child: IconButton(
-                            onPressed: () => {Navigator.pop(context)},
-                            icon: Icon(
-                              Icons.menu,
-                              color: Colors.teal,
-                            ))),
-                    IconButton(
-                        onPressed: () => {},
-                        icon: Icon(
-                          Icons.account_circle,
-                          color: Colors.teal,
-                        )),
-                  ],
-                )),
+                        child: IconButton(onPressed: () => {Navigator.pop(context)},
+                        icon: Icon(Icons.menu, color: Colors.teal,))
+                      ),
+                      IconButton(onPressed: () => {}, icon: Icon(Icons.account_circle, color: Colors.teal,)),
+                    ],
+                  )
+                ),
               ),
               ListTile(
                 title: const Row(
@@ -72,9 +65,7 @@ class Managerdashboard extends StatelessWidget {
                 ),
                 textColor: Colors.teal,
                 iconColor: Colors.teal,
-                onTap: () {
-                  Navigator.pop(context);
-                },
+                onTap: () {Navigator.pop(context);},
               ),
               ListTile(
                 title: const Row(
@@ -87,10 +78,9 @@ class Managerdashboard extends StatelessWidget {
                 iconColor: Colors.teal,
                 onTap: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              OwnProfilePage(details: details, userOption: 3)));
+                    context,
+                    MaterialPageRoute(builder: (context)=>OwnProfilePage(details: details, userOption: 3))
+                  );
                 },
               ),
               Theme(
@@ -111,20 +101,15 @@ class Managerdashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: const Text(
-                          'Customers',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
+                        title: const Text('Customers', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
                         onTap: () {
                           print("Customers");
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CustomerList(
-                                        token: details['authtoken'],
-                                      )));
+                            context, 
+                            MaterialPageRoute(
+                              builder: (context)=>CustomerList(token: details['authtoken'],)
+                            )
+                          );
                         },
                         textColor: Colors.teal,
                       ),
@@ -133,19 +118,14 @@ class Managerdashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: const Text(
-                          'Students',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
+                        title: const Text('Students', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
                         onTap: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Studentslist(
-                                        token: details['authtoken'],
-                                      )));
+                            context, 
+                            MaterialPageRoute(
+                              builder: (context)=>Studentslist( token: details['authtoken'],)
+                            )
+                          );
                         },
                         textColor: Colors.teal,
                       ),
@@ -154,24 +134,20 @@ class Managerdashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: const Text(
-                          'Managers',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
+                        title: const Text('Managers', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
                         onTap: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ManagerList(
-                                        token: details['authtoken'],
-                                      )));
+                            context, 
+                            MaterialPageRoute(
+                              builder: (context)=>ManagerList( token: details['authtoken'],)
+                            )
+                          );
                         },
                         textColor: Colors.teal,
                       ),
                     ),
                   ],
+                  
                 ),
               ),
               Theme(
@@ -192,12 +168,7 @@ class Managerdashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: Text(
-                          'Student Log',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
+                        title: Text('Student Log', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
                         onTap: () {},
                         textColor: Colors.teal,
                       ),
@@ -206,12 +177,7 @@ class Managerdashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: Text(
-                          'Work History',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
+                        title: Text('Work History', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
                         onTap: () {},
                         textColor: Colors.teal,
                       ),
@@ -220,12 +186,7 @@ class Managerdashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: Text(
-                          'Approval',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
+                        title: Text('Approval', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
                         onTap: () {},
                         textColor: Colors.teal,
                       ),
@@ -234,18 +195,13 @@ class Managerdashboard extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 25),
                       child: ListTile(
                         minTileHeight: 15,
-                        title: Text(
-                          'Assign Services',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
+                        title: Text('Assign Services', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AssignService(),
-                            ),
+                              builder: (context)=>AssignService(token: details['authtoken'],)
+                            )
                           );
                         },
                         textColor: Colors.teal,
@@ -277,9 +233,9 @@ class Managerdashboard extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => HomeCalendarPage()));
+                    context, 
+                    MaterialPageRoute(builder: (context)=>HomeCalendarPage())
+                  );
                 },
               ),
               ListTile(
@@ -330,14 +286,14 @@ class Managerdashboard extends StatelessWidget {
                 ),
                 const SizedBox(height: 70),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      "This is Manager Dashboard",
-                      style: TextStyle(
-                        color: Colors.teal[300],
-                        fontSize: 64,
-                      ),
-                    )),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    "This is Manager Dashboard",
+                    style: TextStyle(
+                      color: Colors.teal[300],
+                      fontSize: 64,
+                    ),)
+                ),
               ],
             ),
           ),
@@ -346,9 +302,10 @@ class Managerdashboard extends StatelessWidget {
     );
   }
 
+
   GestureDetector _approval() {
     return GestureDetector(
-        onTap: () {},
+      onTap:(){},
         child: Stack(
           children: [
             Container(
@@ -378,8 +335,7 @@ class Managerdashboard extends StatelessWidget {
                     ),
                   ),
                   const Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -405,7 +361,7 @@ class Managerdashboard extends StatelessWidget {
               ),
             ),
           ],
-        ));
+    ));
   }
 }
 
