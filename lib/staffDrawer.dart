@@ -210,7 +210,7 @@ class StaffDashboard extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AssignService(token: '',),
+                              builder: (context) => AssignService(),
                             ),
                           );
                         },
