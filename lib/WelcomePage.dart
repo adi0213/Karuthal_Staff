@@ -13,9 +13,10 @@ class WelcomePage extends StatefulWidget {
 
 class _WelcomePageState extends State<WelcomePage> {
   final List<String> images = [
-    'assets/karuthal1.png',
-    'assets/karuthal2.png',
+    'assets/old2.webp',
     'assets/karuthal3.jpg',
+    'assets/Old1.webp',
+    'assets/old3.jpg',
   ];
 
   int _currentIndex = 0;
@@ -124,7 +125,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 ],
               ),
             ),
-            SizedBox(height: 0.04 * MediaQuery.of(context).size.height),
+            SizedBox(height: 1 * MediaQuery.of(context).size.height),
           ],
         ),
       ),
