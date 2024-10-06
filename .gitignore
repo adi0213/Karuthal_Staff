@@ -49,3 +49,16 @@ linux/flutter/generated_*
 windows/flutter/generated_*
 macos/flutter/Generated*
 
+
+
+# Ignore Linux build files
+linux/*
+!linux/.gitkeep
+
+# Ignore macOS build files
+macos/*
+!macos/.gitkeep
+
+# Ignore Windows build files
+windows/*
+!windows/.gitkeep
