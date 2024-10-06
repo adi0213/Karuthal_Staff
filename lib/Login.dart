@@ -141,7 +141,7 @@ class _LoginState extends State<Login> {
                                   .textTheme
                                   .headlineLarge
                                   ?.copyWith(
-                                    color: const Color(0xFF57CC99),
+                                    color: Color(0xFF38A3A5),
                                     fontFamily:
                                         GoogleFonts.anekGurmukhi().fontFamily,
                                     fontWeight: FontWeight.bold,
@@ -217,7 +217,7 @@ class _LoginState extends State<Login> {
                               height: 48.0,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF57CC99),
+                                  backgroundColor: Color(0xFF38A3A5),
                                 ),
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
@@ -251,7 +251,7 @@ class _LoginState extends State<Login> {
                           clipper: BottomWaveClipper(),
                           child: Container(
                             width: double.infinity,
-                            color: const Color(0xFFC7F9DE),
+                            color: Color(0xFFC7F9F6),
                           ),
                         ),
                         Positioned(

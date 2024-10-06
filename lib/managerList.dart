@@ -83,7 +83,34 @@ class _ManagerListState extends State<ManagerList> {
         children: [
           Padding(
             padding: const EdgeInsets.all(12.0),
-            child: buildSearchBar(),
+            // child: buildSearchBar(),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: TextField(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.search),
+                    hintText: "Search by Username",
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none
+                    )
+                  ),
+                  onChanged: searchPerson,
+                ),
+              ),
+            ),
           ),
           Divider(height: 2),
           Expanded(
@@ -92,6 +119,27 @@ class _ManagerListState extends State<ManagerList> {
         ],
       ),
     );
+  }
+
+  void searchPerson(String query) {
+    setState(() {
+      ManagerList = _filterCustomers(query);
+    });
+    print(query);
+  }
+
+  Future<List> _filterCustomers(String query) async {
+    if (query.isEmpty) {
+      return await getManagerDetails(); 
+    }
+
+    final filteredCustomers = (await getManagerDetails()).where((customer) {
+      final username = customer['registeredUser']['username']!.toLowerCase();
+      final searchQuery = query.toLowerCase();
+      return username.contains(searchQuery);
+    }).toList();
+
+    return filteredCustomers;
   }
 
 
@@ -137,35 +185,6 @@ class _ManagerListState extends State<ManagerList> {
         }
         return Center(child: Text("No data available")); 
       },
-    );
-  }
-
-
-
-  Widget buildSearchBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          ),
-        ],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
-          children: [
-            Icon(Icons.search, color: Colors.grey),
-            SizedBox(width: 10),
-            Text('Search by Name', style: TextStyle(color: Colors.grey)),
-          ],
-        ),
-      ),
     );
   }
 
