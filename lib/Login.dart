@@ -53,50 +53,58 @@ class _LoginState extends State<Login> {
       if (response.statusCode == 200) {
         print(response.body);
         print(jsonDecode(response.body)["assignedRoles"].contains('STUDENT'));
-        if(jsonDecode(response.body)["assignedRoles"].contains('STUDENT')){
+        if (jsonDecode(response.body)["assignedRoles"].contains('STUDENT')) {
           _emailController.clear();
           _passwordController.clear();
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Studentdashboard(details: jsonDecode(response.body))),
+            MaterialPageRoute(
+                builder: (context) =>
+                    Studentdashboard(details: jsonDecode(response.body))),
           );
-        }
-        else if(jsonDecode(response.body)["assignedRoles"].contains('Manager')){
+        } else if (jsonDecode(response.body)["assignedRoles"]
+            .contains('Manager')) {
           _emailController.clear();
           _passwordController.clear();
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Managerdashboard(details: jsonDecode(response.body),)),
+            MaterialPageRoute(
+                builder: (context) => Managerdashboard(
+                      details: jsonDecode(response.body),
+                    )),
           );
-        }
-        else if(jsonDecode(response.body)["assignedRoles"].contains('Customer')){
+        } else if (jsonDecode(response.body)["assignedRoles"]
+            .contains('Customer')) {
           print("Not a Staff");
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               backgroundColor: Color(0xFF57CC99),
               content: Text(
                 'Not a Staff',
-              style: TextStyle(color: Colors.black),
+                style: TextStyle(color: Colors.black),
               ),
             ),
           );
-        }
-        else{
+        } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => StaffDashboard(loginOption: 4,roles: jsonDecode(response.body)["assignedRoles"],)),
+            MaterialPageRoute(
+                builder: (context) => StaffDashboard(
+                      loginOption: 4,
+                      roles: jsonDecode(response.body)["assignedRoles"],
+                    )),
           );
         }
       } else {
         print('Login failed with status code: ${response.statusCode}');
         print('Error message: ${response.body}');
-        if(response.statusCode==401){
+        if (response.statusCode == 401) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               backgroundColor: Color(0xFF57CC99),
               content: Text(
                 'Invalid Credentials',
-              style: TextStyle(color: Colors.black),
+                style: TextStyle(color: Colors.black),
               ),
             ),
           );
@@ -114,223 +122,223 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 30),
-                            Center(
-                              child: Text(
-                                'Log in',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineLarge
-                                    ?.copyWith(
-                                      color: const Color(0xFF57CC99),
-                                      fontFamily:
-                                          GoogleFonts.anekGurmukhi().fontFamily,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 40,
-                                    ),
-                              ),
+      body: Stack(children: [
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 30),
+                          Center(
+                            child: Text(
+                              'Log in',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineLarge
+                                  ?.copyWith(
+                                    color: Color(0xFF38A3A5),
+                                    fontFamily:
+                                        GoogleFonts.anekGurmukhi().fontFamily,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 40,
+                                  ),
                             ),
-                            SizedBox(height: 30),
-                            _buildLabelText(context, "Email"),
-                            const SizedBox(height: 2),
-                            _buildProjectedTextFormField(
-                              controller: _emailController,
-                              isPassword: false,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your email';
-                                } /* else if (!value.contains('@')) {
+                          ),
+                          SizedBox(height: 30),
+                          _buildLabelText(context, "Email"),
+                          const SizedBox(height: 2),
+                          _buildProjectedTextFormField(
+                            controller: _emailController,
+                            isPassword: false,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your email';
+                              } /* else if (!value.contains('@')) {
                                   return 'Please enter a valid email';
                                 }*/
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                _buildLabelText(context, "Password"),
-                                Row(
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(
-                                        color: const Color(0xFF838181),
-                                        _isPasswordVisible
-                                            ? Icons.visibility_off
-                                            : Icons.visibility,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          _isPasswordVisible = !_isPasswordVisible;
-                                        });
-                                      },
-                                    ),
-                                    Text(
-                                      _isPasswordVisible ? 'Unhide' : 'Hide',
-                                      style: TextStyle(
-                                        color: const Color(0xFF838181),
-                                        fontSize: 16,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 2),
-                           _buildPasswordField(),
-                            const SizedBox(height: 2),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => work(),
-                                  ),
-                                );
-                              },
-                              child: _buildLabelText(context, "Forgot Password ?"),
-                            ),
-                            SizedBox(height: 40),
-                            Center(
-                              child: SizedBox(
-                                height: 48.0,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF57CC99),
-                                  ),
-                                  onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      // Call the login function here
-                                      _login();
-                                    }
-                                  },
-                                  child: Text(
-                                    "Log in",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 25,
-                                      fontFamily: GoogleFonts.signika().fontFamily,
-                                   ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: constraints.maxHeight > 400
-                          ? constraints.maxHeight - 400
-                          : 0,
-                      child: Stack(
-                        children: [
-                          ClipPath(
-                            clipper: BottomWaveClipper(),
-                            child: Container(
-                              width: double.infinity,
-                              color: const Color(0xFFC7F9DE),
-                            ),
+                              return null;
+                            },
                           ),
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            child: Image.asset(
-                              'assets/oldcare2.png',
-                              height: 250,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 150,
-                            left: 0,
-                            right: 0,
-                            child: Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _buildLabelText(context, "Password"),
+                              Row(
                                 children: [
-                                  SizedBox(
-                                    width: 175,
-                                    child: const Divider(
-                                      height: 1,
-                                      color: Color(0x66666666),
+                                  IconButton(
+                                    icon: Icon(
+                                      color: const Color(0xFF838181),
+                                      _isPasswordVisible
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
                                     ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _isPasswordVisible =
+                                            !_isPasswordVisible;
+                                      });
+                                    },
                                   ),
-                                  const Text(
-                                    "Or",
+                                  Text(
+                                    _isPasswordVisible ? 'Unhide' : 'Hide',
                                     style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0x66666666)),
-                                  ),
-                                  SizedBox(
-                                    width: 175,
-                                    child: const Divider(
-                                      height: 1,
-                                      color: Color(0x66666666),
+                                      color: const Color(0xFF838181),
+                                      fontSize: 16,
                                     ),
-                                  ),
+                                  )
                                 ],
-                              ),  
-                            ),
+                              ),
+                            ],
                           ),
-                          Positioned(
-                            bottom: 90,
-                            left: 0,
-                            right: 0,
-                            child: Center(
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => CreateAccount()),
-                                  );
+                          const SizedBox(height: 2),
+                          _buildPasswordField(),
+                          const SizedBox(height: 2),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => work(),
+                                ),
+                              );
+                            },
+                            child:
+                                _buildLabelText(context, "Forgot Password ?"),
+                          ),
+                          SizedBox(height: 40),
+                          Center(
+                            child: SizedBox(
+                              height: 48.0,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFF38A3A5),
+                                ),
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    // Call the login function here
+                                    _login();
+                                  }
                                 },
                                 child: Text(
-                                  'Create an account',
+                                  "Log in",
                                   style: TextStyle(
-                                    fontSize: 20,
-                                    color: Color(0xFF296685),
-                                    fontFamily: GoogleFonts.robotoFlex().fontFamily,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: Color(0xFF296685),
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    fontFamily:
+                                        GoogleFonts.signika().fontFamily,
                                   ),
                                 ),
                               ),
                             ),
-                          ),  
+                          ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
-          loadingWidget()
-        ]
-      ),
+                  ),
+                  SizedBox(
+                    height: constraints.maxHeight > 400
+                        ? constraints.maxHeight - 400
+                        : 0,
+                    child: Stack(
+                      children: [
+                        ClipPath(
+                          clipper: BottomWaveClipper(),
+                          child: Container(
+                            width: double.infinity,
+                            color: const Color(0xFFC7F9F6),
+                          ),
+                        ),
+                        Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: Column(children: [
+                              Image.asset(
+                                'assets/oldcare2.png',
+                                height: 250,
+                                fit: BoxFit.contain,
+                              ),
+                              Center(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    SizedBox(
+                                      width: 175,
+                                      child: const Divider(
+                                        height: 1,
+                                        color: Color(0x66666666),
+                                      ),
+                                    ),
+                                    const Text(
+                                      "Or",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0x66666666)),
+                                    ),
+                                    SizedBox(
+                                      width: 175,
+                                      child: const Divider(
+                                        height: 1,
+                                        color: Color(0x66666666),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Center(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              CreateAccount()),
+                                    );
+                                  },
+                                  child: Text(
+                                    'Create an account',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Color(0xFF296685),
+                                      fontFamily:
+                                          GoogleFonts.robotoFlex().fontFamily,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: Color(0xFF296685),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ]))
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        loadingWidget()
+      ]),
     );
   }
 
-  Widget loadingWidget(){
-    if(_isLoading){
-      return Center(child: CircularProgressIndicator(),);
+  Widget loadingWidget() {
+    if (_isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
     }
     return SizedBox.shrink();
   }
