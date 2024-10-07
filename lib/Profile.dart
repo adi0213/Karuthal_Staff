@@ -425,16 +425,16 @@ class _OwnProfilePageState extends State<OwnProfilePage> {
     else if(op==2){
       // Student
       var studentId = "${widget.details['studentId']}";
-      var email = "${widget.details['registeredUser']['email']}";
-      var mobile = "${widget.details['registeredUser']['mobile']}" != "null" ? "${widget.details['registeredUser']['mobile']}" : "Unknown";
-      var username = "${widget.details['registeredUser']['username']}";
-      var fName = "${widget.details['registeredUser']['firstName']}" != "null" ? "${widget.details['firstName']}" : "Unknown";
-      var lName = "${widget.details['registeredUser']['lastName']}" != "null" ? "${widget.details['lastName']}" : "Unknown";
-      var course = "${widget.details['course']}";
-      var age = "${widget.details['age']}";
-      var gender = "${widget.details['gender']}" != "null" ? "${widget.details['gender']}" : "Unknown";
-      var address = "${widget.details['registeredUser']['address']}" != "null" ? "${widget.details['registeredUser']['address']}" : "Unknown";
-      var city = "${widget.details['registeredUser']['city']}" != "null" ? "${widget.details['registeredUser']['city']}" : "Unknown";
+      var email = "${widget.details['email']}";
+      var mobile = "${widget.details['mobile']}" != "null" ? "${widget.details['registeredUser']['mobile']}" : "Unknown";
+      var username = "${widget.details['username']}";
+      var fName = "${widget.details['firstName']}" != "null" ? "${widget.details['firstName']}" : "Unknown";
+      var lName = "${widget.details['lastName']}" != "null" ? "${widget.details['lastName']}" : "Unknown";
+      // var course = "${widget.details['course']}";
+      // var age = "${widget.details['age']}";
+      // var gender = "${widget.details['gender']}" != "null" ? "${widget.details['gender']}" : "Unknown";
+      var address = "${widget.details['address']}" != "null" ? "${widget.details['registeredUser']['address']}" : "Unknown";
+      var city = "${widget.details['city']}" != "null" ? "${widget.details['registeredUser']['city']}" : "Unknown";
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -449,12 +449,12 @@ class _OwnProfilePageState extends State<OwnProfilePage> {
           WidgetBuilder.buildTextField('First Name', fName),
           Divider(color: Colors.white, thickness: 1),
           WidgetBuilder.buildTextField('Last Name', lName),
-          Divider(color: Colors.white, thickness: 1),
-          WidgetBuilder.buildTextField('Course', course),
-          Divider(color: Colors.white, thickness: 1),
-          WidgetBuilder.buildTextField('Age', age),
-          Divider(color: Colors.white, thickness: 1),
-          WidgetBuilder.buildTextField('Gender', gender),
+          // Divider(color: Colors.white, thickness: 1),
+          // WidgetBuilder.buildTextField('Course', course),
+          // Divider(color: Colors.white, thickness: 1),
+          // WidgetBuilder.buildTextField('Age', age),
+          // Divider(color: Colors.white, thickness: 1),
+          // WidgetBuilder.buildTextField('Gender', gender),
           Divider(color: Colors.white, thickness: 1),
           WidgetBuilder.buildTextField('Address', address),
           Divider(color: Colors.white, thickness: 1),

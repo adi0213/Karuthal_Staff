@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'ManagerDashboard.dart';
+import 'Profile.dart';
+import 'calendar.dart';
 
-class StaffDashboard extends StatelessWidget {
-  final int loginOption;
-  final List? roles;
-  const StaffDashboard({super.key, required this.loginOption, this.roles});
+class Studentdashboard extends StatelessWidget {
+  //final String token;
+  final Map<String,dynamic> details;
+  const Studentdashboard({super.key, required this.details});
 
   final manager_name = 'managerName!';
 
@@ -38,25 +39,18 @@ class StaffDashboard extends StatelessWidget {
               Container(
                 height: 75,
                 child: DrawerHeader(
-                    child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    RotatedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      RotatedBox(
                         quarterTurns: 1,
-                        child: IconButton(
-                            onPressed: () => {Navigator.pop(context)},
-                            icon: Icon(
-                              Icons.menu,
-                              color: Colors.teal,
-                            ))),
-                    IconButton(
-                        onPressed: () => {},
-                        icon: Icon(
-                          Icons.account_circle,
-                          color: Colors.teal,
-                        )),
-                  ],
-                )),
+                        child: IconButton(onPressed: () => {Navigator.pop(context)},
+                        icon: Icon(Icons.menu, color: Colors.teal,))
+                      ),
+                      IconButton(onPressed: () => {}, icon: Icon(Icons.account_circle, color: Colors.teal,)),
+                    ],
+                  )
+                ),
               ),
               ListTile(
                 title: const Row(
@@ -67,7 +61,7 @@ class StaffDashboard extends StatelessWidget {
                 ),
                 textColor: Colors.teal,
                 iconColor: Colors.teal,
-                onTap: () {},
+                onTap: () {Navigator.pop(context);},
               ),
               ListTile(
                 title: const Row(
@@ -78,145 +72,40 @@ class StaffDashboard extends StatelessWidget {
                 ),
                 textColor: Colors.teal,
                 iconColor: Colors.teal,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context)=>OwnProfilePage(details: details, userOption: 2))
+                  );
+                },
+              ),
+              ListTile(
+                title: const Row(
+                  children: [
+                    Icon(Icons.person),
+                    Text('Assignments'),
+                  ],
+                ),
+                textColor: Colors.teal,
+                iconColor: Colors.teal,
                 onTap: () {},
               ),
-              Theme(
-                data: ThemeData().copyWith(dividerColor: Colors.transparent),
-                child: ExpansionTile(
-                  title: const Row(
-                    children: [
-                      Icon(Icons.manage_accounts),
-                      Text('Management '),
-                    ],
-                  ),
-                  textColor: Colors.teal,
-                  iconColor: Colors.teal,
-                  collapsedIconColor: Colors.teal,
-                  collapsedTextColor: Colors.teal,
+              ListTile(
+                title: const Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 25),
-                      child: ListTile(
-                        minTileHeight: 15,
-                        title: const Text(
-                          'Users',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
-                        onTap: () {},
-                        textColor: Colors.teal,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 25),
-                      child: ListTile(
-                        minTileHeight: 15,
-                        title: const Text(
-                          'Customers',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
-                        onTap: () {},
-                        textColor: Colors.teal,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 25),
-                      child: ListTile(
-                        minTileHeight: 15,
-                        title: const Text(
-                          'Managers',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
-                        onTap: () {},
-                        textColor: Colors.teal,
-                      ),
-                    ),
+                    Icon(Icons.person),
+                    Text('Log Book'),
                   ],
                 ),
-              ),
-              Theme(
-                data: ThemeData().copyWith(dividerColor: Colors.transparent),
-                child: ExpansionTile(
-                  title: const Row(
-                    children: [
-                      Icon(Icons.assignment_turned_in),
-                      Text('Admin Tasks'),
-                    ],
-                  ),
-                  textColor: Colors.teal,
-                  iconColor: Colors.teal,
-                  collapsedIconColor: Colors.teal,
-                  collapsedTextColor: Colors.teal,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 25),
-                      child: ListTile(
-                        minTileHeight: 15,
-                        title: Text(
-                          'Student Log',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
-                        onTap: () {},
-                        textColor: Colors.teal,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 25),
-                      child: ListTile(
-                        minTileHeight: 15,
-                        title: Text(
-                          'Work History',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
-                        onTap: () {},
-                        textColor: Colors.teal,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 25),
-                      child: ListTile(
-                        minTileHeight: 15,
-                        title: Text(
-                          'Approval',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
-                        onTap: () {},
-                        textColor: Colors.teal,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 25),
-                      child: ListTile(
-                        minTileHeight: 15,
-                        title: Text(
-                          'Assign Services',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Colors.teal),
-                        ),
-                        onTap: () {},
-                        textColor: Colors.teal,
-                      ),
-                    ),
-                  ],
-                ),
+                textColor: Colors.teal,
+                iconColor: Colors.teal,
+                onTap: () {},
               ),
               ListTile(
                 title: const Row(
                   children: [
                     Icon(Icons.feedback),
-                    Text('Feedback'),
+                    Text('Work History'),
                   ],
                 ),
                 textColor: Colors.teal,
@@ -232,7 +121,13 @@ class StaffDashboard extends StatelessWidget {
                 ),
                 textColor: Colors.teal,
                 iconColor: Colors.teal,
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context)=>HomeCalendarPage())
+                  );
+                },
               ),
               ListTile(
                 title: const Row(
@@ -243,7 +138,10 @@ class StaffDashboard extends StatelessWidget {
                 ),
                 textColor: Colors.teal,
                 iconColor: Colors.teal,
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
               ),
             ],
           ),
@@ -279,8 +177,14 @@ class StaffDashboard extends StatelessWidget {
                 ),
                 const SizedBox(height: 70),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: getBody(loginOption)),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    "This is Student Dashboard",
+                    style: TextStyle(
+                      color: Colors.teal[300],
+                      fontSize: 64,
+                    ),)
+                ),
               ],
             ),
           ),
@@ -289,41 +193,10 @@ class StaffDashboard extends StatelessWidget {
     );
   }
 
-  Widget getBody(int op) {
-    if (op == 1) {
-      return Text(
-        "This is student Dashboard",
-        style: TextStyle(
-          color: Colors.teal[300],
-          fontSize: 64,
-        ),
-      );
-    } else if (op == 2) {
-      return Text(
-        "This is customer Dashboard",
-        style: TextStyle(
-          color: Colors.teal[300],
-          fontSize: 64,
-        ),
-      );
-    } else if (op == 3) {
-      return Managerdashboard(
-        details: {},
-      );
-    } else {
-      return Text(
-        "Role - $roles",
-        style: TextStyle(
-          color: Colors.teal[300],
-          fontSize: 64,
-        ),
-      );
-    }
-  }
 
   GestureDetector _approval() {
     return GestureDetector(
-        onTap: () {},
+      onTap:(){},
         child: Stack(
           children: [
             Container(
@@ -353,8 +226,7 @@ class StaffDashboard extends StatelessWidget {
                     ),
                   ),
                   const Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -380,7 +252,7 @@ class StaffDashboard extends StatelessWidget {
               ),
             ),
           ],
-        ));
+    ));
   }
 }
 

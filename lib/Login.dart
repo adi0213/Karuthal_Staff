@@ -7,6 +7,7 @@ import '/CreateAccount.dart';
 import '/Error.dart';
 import '/design.dart';
 import 'ManagerDashboard.dart';
+import 'StudentDashboard.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -58,7 +59,8 @@ class _LoginState extends State<Login> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => StaffDashboard(loginOption: 1)),
+                builder: (context) =>
+                    Studentdashboard(details: jsonDecode(response.body))),
           );
         } else if (jsonDecode(response.body)["assignedRoles"]
             .contains('Manager')) {
@@ -251,7 +253,7 @@ class _LoginState extends State<Login> {
                           clipper: BottomWaveClipper(),
                           child: Container(
                             width: double.infinity,
-                            color: Color(0xFFC7F9F6),
+                            color: const Color(0xFFC7F9F6),
                           ),
                         ),
                         Positioned(
@@ -264,19 +266,19 @@ class _LoginState extends State<Login> {
                                 height: 250,
                                 fit: BoxFit.contain,
                               ),
-                              const Center(
+                              Center(
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     SizedBox(
                                       width: 175,
-                                      child: Divider(
+                                      child: const Divider(
                                         height: 1,
                                         color: Color(0x66666666),
                                       ),
                                     ),
-                                    Text(
+                                    const Text(
                                       "Or",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
@@ -284,7 +286,7 @@ class _LoginState extends State<Login> {
                                     ),
                                     SizedBox(
                                       width: 175,
-                                      child: Divider(
+                                      child: const Divider(
                                         height: 1,
                                         color: Color(0x66666666),
                                       ),
@@ -292,7 +294,7 @@ class _LoginState extends State<Login> {
                                   ],
                                 ),
                               ),
-                              const SizedBox(
+                              SizedBox(
                                 height: 20,
                               ),
                               Center(
@@ -302,23 +304,23 @@ class _LoginState extends State<Login> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const CreateAccount()),
+                                              CreateAccount()),
                                     );
                                   },
                                   child: Text(
                                     'Create an account',
                                     style: TextStyle(
                                       fontSize: 20,
-                                      color: const Color(0xFF296685),
+                                      color: Color(0xFF296685),
                                       fontFamily:
                                           GoogleFonts.robotoFlex().fontFamily,
                                       decoration: TextDecoration.underline,
-                                      decorationColor: const Color(0xFF296685),
+                                      decorationColor: Color(0xFF296685),
                                     ),
                                   ),
                                 ),
                               ),
-                            ])),
+                            ]))
                       ],
                     ),
                   ),
