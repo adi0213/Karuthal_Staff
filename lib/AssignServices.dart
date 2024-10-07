@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'ServiceDetails.dart';
+
 class AssignService extends StatefulWidget {
   final String token;
   const AssignService({super.key,required this.token});
@@ -37,19 +39,6 @@ class _AssignServiceState extends State<AssignService> {
     var bookingrequestdetails = jsonDecode(bookingRequests.body);
     return bookingrequestdetails['result'];
   }
-
-  List<Customer> customers = [
-    Customer(101, 'Alice Smith', 'Approved', DateTime(2024, 10, 1)),
-    Customer(102, 'Bob Johnson', 'Pending', DateTime(2024, 10, 2)),
-    Customer(103, 'Charlie Brown', 'Approved', DateTime(2024, 10, 3)),
-    Customer(104, 'Daisy Miller', 'Pending', DateTime(2024, 10, 4)),
-    Customer(105, 'Ethan Williams', 'Approved', DateTime(2024, 10, 5)),
-    Customer(106, 'Fiona Davis', 'Pending', DateTime(2024, 10, 6)),
-    Customer(107, 'George Wilson', 'Approved', DateTime(2024, 10, 7)),
-    Customer(108, 'Hannah Taylor', 'Pending', DateTime(2024, 10, 8)),
-    Customer(109, 'Ian Anderson', 'Approved', DateTime(2024, 10, 9)),
-    Customer(110, 'Jessica Thompson', 'Pending', DateTime(2024, 10, 10)),
-  ];
 
   String filter = 'All';
   String activeIcon = 'None';
@@ -198,32 +187,41 @@ class _AssignServiceState extends State<AssignService> {
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       final request = filteredBookingRequests[index];
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Customer ID: ${request['enrolledByCustomer']['customerId']}'),
-                              Text('Name: ${request['enrolledByCustomer']['registeredUser']['email']}'),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text("Rand"),
-                              Text(
-                                request['status'],
-                                style: TextStyle(
-                                  color: request['status'] == 'Approved'
-                                      ? Colors.green
-                                      : Colors.red,
+                      return InkWell(
+                        onTap: () {
+                          print("Tapped ${request['id']}");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context)=>ServiceDetails(token: widget.token, bookingId: request['id'],))
+                          );                        
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Customer ID: ${request['enrolledByCustomer']['customerId']}'),
+                                Text('Name: ${request['enrolledByCustomer']['registeredUser']['email']}'),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text("Rand"),
+                                Text(
+                                  request['status'],
+                                  style: TextStyle(
+                                    color: request['status'] == 'Approved'
+                                        ? Colors.green
+                                        : Colors.red,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       );
                     },
                   );
@@ -235,13 +233,4 @@ class _AssignServiceState extends State<AssignService> {
       );
     }
   }
-}
-
-class Customer {
-  final int id;
-  final String name;
-  final String status;
-  final DateTime date;
-
-  Customer(this.id, this.name, this.status, this.date);
 }
