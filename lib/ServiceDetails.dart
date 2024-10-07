@@ -56,7 +56,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
     return jsonDecode(bookingDetails.body);
   }
 
-  void assignStudents() async{
+  Future<void> assignStudents() async{
     final headers = {
       "Content-Type" : "application/json",
       "Authorization" : "Bearer ${widget.token}"
@@ -74,6 +74,58 @@ class _ServiceDetailsState extends State<ServiceDetails> {
       );
       print(response.statusCode);
       print(response.body);
+      if (response.statusCode == 200){
+        return showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Successful'),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    Text('${jsonDecode(response.body)['message']}'),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          }
+        );
+      }
+      else{
+        return showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Unsuccessful'),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    Text('${jsonDecode(response.body)['message']}'),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          }
+        );
+      }
     }catch(e){
       print(e);
     }
