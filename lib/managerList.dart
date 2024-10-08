@@ -25,7 +25,7 @@ class _ManagerListState extends State<ManagerList> {
       headers: headers,
     );
     var managerDetailsList = jsonDecode(customerDetails.body);
-    return managerDetailsList;
+    return managerDetailsList['result'];
   }
 
   void initState(){
