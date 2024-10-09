@@ -27,7 +27,7 @@ class _CustomerListState extends State<CustomerList> {
       headers: headers,
     );
     var customerDetailsList = jsonDecode(customerDetails.body);
-    return customerDetailsList;
+    return customerDetailsList['result'];
   }
 
   void initState(){

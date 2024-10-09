@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-
-
 class HomeCalendarPage extends StatefulWidget {
   @override
   _HomeCalendarPageState createState() => _HomeCalendarPageState();
@@ -18,10 +16,11 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
       appBar: AppBar(
         title: Text('Calendar'),
         leading: IconButton(
-          onPressed: (){
+          onPressed: () {
             Navigator.pop(context);
-          }, 
-          icon: Icon(Icons.arrow_left)),
+          },
+          icon: Icon(Icons.arrow_left),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -43,11 +42,11 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
               },
               calendarStyle: CalendarStyle(
                 todayDecoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: Colors.lightBlueAccent,
                   shape: BoxShape.circle,
                 ),
                 selectedDecoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
+                  color: Colors.greenAccent,
                   shape: BoxShape.circle,
                 ),
                 todayTextStyle: TextStyle(
@@ -61,6 +60,20 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                 titleCentered: true,
               ),
               startingDayOfWeek: StartingDayOfWeek.monday,
+              calendarBuilders: CalendarBuilders(
+                defaultBuilder: (context, day, focusedDay) {
+                  // Only change the text color for Sundays
+                  if (day.weekday == DateTime.sunday) {
+                    return Center(
+                      child: Text(
+                        day.day.toString(),
+                        style: TextStyle(color: Colors.red), // Sundays in red
+                      ),
+                    );
+                  }
+                  return null; // Return null for other days to use default style
+                },
+              ),
             ),
           ],
         ),

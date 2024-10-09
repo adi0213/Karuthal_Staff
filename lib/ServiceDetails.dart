@@ -45,15 +45,37 @@ class _ServiceDetailsState extends State<ServiceDetails> {
   }
 
   Future<List> getStudents() async{
-    final headers = {
+    var bookingDetails;
+    try{
+      final headers = {
       "Content-Type" : "application/json",
       "Authorization" : "Bearer ${widget.token}"
     };
-    var bookingDetails = await http.get(
+    bookingDetails = await http.get(
       Uri.parse("http://104.237.9.211:8007/karuthal/api/v1/persona/students"),
       headers: headers
     );
-    return jsonDecode(bookingDetails.body);
+    }
+    catch(e){
+      print(e);
+    }
+    finally{
+      if(bookingDetails.statusCode == 200){
+        return jsonDecode(bookingDetails.body)['result'];
+      }
+      else{
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Color(0xFF57CC99),
+              content: Text(
+                '${jsonDecode(bookingDetails.body)['message']}',
+              style: TextStyle(color: Colors.black),
+              ),
+            ),
+          );
+        return [];
+      }
+    }
   }
 
   Future<void> assignStudents() async{
