@@ -1,3 +1,4 @@
+import 'package:chilla_staff/workHistory.dart';
 import 'package:flutter/material.dart';
 import 'customerList.dart';
 import 'studentslist.dart';
@@ -178,7 +179,15 @@ class Managerdashboard extends StatelessWidget {
                       child: ListTile(
                         minTileHeight: 15,
                         title: Text('Work History', style: TextStyle(decoration: TextDecoration.underline, decorationColor: Colors.teal),),
-                        onTap: () {},
+                        onTap: () {
+                          print("Work History");
+                          Navigator.push(
+                            context, 
+                            MaterialPageRoute(
+                              builder: (context)=>WorkHistory(token: details['authtoken'],)
+                            )
+                          );
+                        },
                         textColor: Colors.teal,
                       ),
                     ),
