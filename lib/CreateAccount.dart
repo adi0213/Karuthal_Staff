@@ -54,7 +54,7 @@ class _CreateAccountState extends State<CreateAccount> {
     if (responseData['status'] == 200) {
       print('Status 200: Account created successfully.');
       // Show success dialog and navigate to UserWaitingPage
-      //_showSuccessDialog('Account created successfully!', UserWaitingPage());
+      _showSuccessDialog('Account created successfully!', UserWaitingPage());
     } else if (responseData['status'] == 406) {
       print('Status 406: Username or email already taken.');
 
