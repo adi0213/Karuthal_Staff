@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:chilla_staff/StudentEnrollment.dart';
 import 'package:chilla_staff/staffDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -53,20 +54,33 @@ class _LoginState extends State<Login> {
 
       if (response.statusCode == 200) {
         final responseBody = jsonDecode(response.body);
-
+        var result = responseBody['result'];
         if (responseBody['result'] != null) {
-          var roles = responseBody['result']['assignedRoles'];
-
+          var roles = result['assignedRoles'];
+          //print(result);
           if (roles != null && roles.contains('STUDENT')) {
             _emailController.clear();
             _passwordController.clear();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    Studentdashboard(details: responseBody['result']),
-              ),
-            );
+            if (result['registered'] == false) {
+              // Redirect to Student Self Enrollment Form
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StudentSelfEnrollment(details: result),
+                ),
+              );
+            } else {
+              // Proceed with normal student dashboard
+              _emailController.clear();
+              _passwordController.clear();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      Studentdashboard(details: jsonDecode(response.body)),
+                ),
+              );
+            }
           } else if (roles.contains('MANAGER')) {
             _emailController.clear();
             _passwordController.clear();

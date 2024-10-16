@@ -24,7 +24,7 @@ class Studentdashboard extends StatelessWidget {
         token = details['authtoken'] ?? '', 
         email = details['email'] ?? '', 
         id = details['id'] ?? '',
-        studentId = details['studentId'] ?? '',
+        studentId = details['studentId'] ?? 0,
         student_name = '${details['firstName'] ?? ''} ${details['lastName'] ?? ''}';
         
 

@@ -14,6 +14,10 @@ String getStudentsUrl() {
 }
 
 
+String getServicesUrl() {
+  return '$baseUrl/metadata/services';
+}
+
 String getBookingRequestsUrl() {
   return '$baseUrl/bookingrequest';
 }
@@ -22,6 +26,8 @@ String getSignupUrl() {
   return '$baseUrl/persona/signup';
 }
 
-
+String getStudentUpdateUrl(){
+  return '$baseUrl/staff/students/';
+}
 
 
