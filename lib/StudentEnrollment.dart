@@ -199,33 +199,53 @@ Future<void> _fetchStudentDetails() async {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Student Self-Enrollment'),
-        backgroundColor: const Color(0xFF38A3A5),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                FirstNameField(controller: _firstNameController),
-                const SizedBox(height: 20),
-                LastNameField(controller: _lastNameController),
-                const SizedBox(height: 20),
-                EmailField(email: widget.email),
-                const SizedBox(height: 20),
-                AgeField(controller: _ageController),
-                const SizedBox(height: 20),
-                CourseField(controller: _courseController),
-                const SizedBox(height: 20),
-                CompletionYearField(controller: _completionYearController),
-                const SizedBox(height: 20),
-                GenderField(
+ Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Student Self-Enrollment'),
+      backgroundColor: const Color(0xFF38A3A5),
+    ),
+    body: Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 400,  
+                child: FirstNameField(controller: _firstNameController),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 400,  
+                child: LastNameField(controller: _lastNameController),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 400,  
+                child: EmailField(email: widget.email),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 400,  
+                child: AgeField(controller: _ageController),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 400,  
+                child: CourseField(controller: _courseController),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 400,  
+                child: CompletionYearField(controller: _completionYearController),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 400,  
+                child: GenderField(
                   selectedGender: _selectedGender,
                   onChanged: (Gender? newValue) {
                     setState(() {
@@ -233,8 +253,11 @@ Future<void> _fetchStudentDetails() async {
                     });
                   },
                 ),
-                const SizedBox(height: 20),
-                MultiSelectDialogField<PersonalizedService>(
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 400,   
+                child: MultiSelectDialogField<PersonalizedService>(
                   items: _availableServices
                       .map((service) => MultiSelectItem(service, service.name))
                       .toList(),
@@ -247,19 +270,19 @@ Future<void> _fetchStudentDetails() async {
                   },
                   initialValue: _selectedServices,
                 ),
-
-                const SizedBox(height: 20),
-
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  child: const Text('Submit'),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _submitForm,
+                child: const Text('Submit'),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }
 
