@@ -25,11 +25,10 @@ class Studentdashboard extends StatelessWidget {
         email = details['email'] ?? '', 
         id = details['id'] ?? '',
         studentId = details['studentId'] ?? 0,
-        student_name = '${details['firstName'] ?? ''} ${details['lastName'] ?? ''}';
-        
-
-
-
+        student_name = '${details['firstName'] ?? ''} ${details['lastName'] ?? ''}' {
+        //print('Details: $details'); 
+        //print('Student ID: $studentId');  
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,13 +128,10 @@ class Studentdashboard extends StatelessWidget {
                   );
 
                   try {
-                    // Fetch assignments data from the backend
-                    //List<dynamic> assignments = await fetchAssignments();
-
                     Navigator.pop(context);
                     Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context)=>StudentAssignedServices(token:token, studentId: 44,))
+                            MaterialPageRoute(builder: (context)=>StudentAssignedServices(token:token, studentId: studentId,))
                           ); 
                   } catch (e) {
                     // Handle errors by popping the loading indicator and showing an error message

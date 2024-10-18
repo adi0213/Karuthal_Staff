@@ -15,72 +15,111 @@ class StudentAssignedServices extends StatefulWidget {
 }
 
 class _StudentAssignedServicesState extends State<StudentAssignedServices> {
-  var currentBookingDetails;
+  Map<String, dynamic>? currentBookingDetails;
   List<int> bookingRequestIds = [];
   int currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    print('Initialized StudentAssignedServices with studentId: ${widget.studentId}');
     fetchBookingDetails();
   }
 
   void fetchBookingDetails() async {
-    bookingRequestIds = await fetchAssignments();
-    if (bookingRequestIds.isNotEmpty) {
-      await getBookingDetails(bookingRequestIds[currentIndex]);
+    try {
+      bookingRequestIds = await fetchAssignments();
+      print("Fetched Booking Request IDs: $bookingRequestIds");
+      if (bookingRequestIds.isNotEmpty) {
+        await getBookingDetails(bookingRequestIds[currentIndex]);
+      }
+    } catch (e) {
+      print("Error: $e");
     }
-    setState(() {});
+    print('return fetchBookingDetails');
   }
 
   Future<List<int>> fetchAssignments() async {
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      "Authorization": "Bearer ${widget.token}"
-    };
+      final Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${widget.token}',
+      };
 
-    final response = await http.get(
-      Uri.parse('http://104.237.9.211:8007/karuthal/api/v1/bookingrequest/student/43'),
-      headers: headers,
-    );
+      print('Fetching from: ${getBookingRequestsUrl()}/student/${widget.studentId}');
+      final response = await http.get(
+        Uri.parse('${getBookingRequestsUrl()}/student/${widget.studentId}'),
+        headers: headers,
+      );
 
-    if (response.statusCode == 200) {
-      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-      List<dynamic> bookingRequests = jsonResponse['result'] ?? jsonResponse;
-      return bookingRequests.map((bookingRequest) => bookingRequest['id'] as int).toList();
-    } else {
-      throw Exception('Failed to load assignments');
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        print('---- jsonResponse: $jsonResponse');
+
+        if (jsonResponse['status'] == 200) {
+          List<dynamic> bookingRequests = jsonResponse['result'];
+          List<int> bookingRequestIds = bookingRequests
+              .map((bookingRequest) => bookingRequest['id'] as int)
+              .toList();
+          print('Booking request IDs: $bookingRequestIds');
+          return bookingRequestIds;
+        } else {
+          throw Exception('Failed to retrieve booking requests: ${jsonResponse['message']}');
+        }
+      } else {
+        throw Exception('Failed to load assignments');
+      }
     }
-  }
 
   Future<void> getBookingDetails(int bookingRequestId) async {
+    print('---- calling getBookingDetails with ID: $bookingRequestId');
     final headers = {
       "Content-Type": "application/json",
       "Authorization": "Bearer ${widget.token}"
     };
 
-    var bookingDetails = await http.get(
-      Uri.parse('${getBookingRequestsUrl()}/$bookingRequestId'),
-      headers: headers,
-    );
+    try {
+      final response = await http.get(
+        Uri.parse('${getBookingRequestsUrl()}/$bookingRequestId'),
+        headers: headers,
+      );
 
-    if (bookingDetails.statusCode == 200) {
-      currentBookingDetails = jsonDecode(bookingDetails.body);
-    } else {
-      throw Exception('Failed to load booking details: ${bookingDetails.body}');
+     
+      if (response.statusCode == 200) {
+        final bookingDetailsResponse = jsonDecode(response.body);
+        print('---- bookingDetails: ${bookingDetailsResponse['result']}');
+
+        setState(() {
+          // Directly assign the result to currentBookingDetails
+          currentBookingDetails = bookingDetailsResponse['result'];
+        });
+      } else {
+        // Handle non-200 responses
+        final errorDetails = jsonDecode(response.body);
+        throw Exception('Failed to load booking details: ${errorDetails['message']}');
+      }
+    } catch (e) {
+      // Handle exceptions (e.g., network issues)
+      print('Error fetching booking details: $e');
+      throw Exception('An error occurred while fetching booking details: $e');
     }
   }
 
-  Widget getValue(data) {
-    String value = data == "false" ? "No" : "Yes";
-    return Text(value);
+
+  Widget getValue(dynamic data) {
+    if (data is bool) {
+      return Text(data ? "Yes" : "No");
+    } else if (data is String) {
+      return Text(data);
+    } else {
+      return const Text("Unknown");
+    }
   }
+
 
   void nextBooking() {
     if (currentIndex < bookingRequestIds.length - 1) {
       currentIndex++;
       getBookingDetails(bookingRequestIds[currentIndex]);
-      setState(() {});
     }
   }
 
@@ -88,17 +127,17 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
     if (currentIndex > 0) {
       currentIndex--;
       getBookingDetails(bookingRequestIds[currentIndex]);
-      setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (currentBookingDetails == null) {
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(),
       );
     }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -110,33 +149,36 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
       ),
       drawer: Drawer(
         child: ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text("Go Back")),
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+          child: const Text("Go Back"),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Other UI components remain unchanged
-
             // Booking Details Header
             Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.all(16.0),
               color: Colors.teal,
-              width: MediaQuery.sizeOf(context).width,
+              width: MediaQuery.of(context).size.width,
               child: RichText(
                 text: TextSpan(
-                    style: const TextStyle(fontSize: 20, color: Colors.white),
-                    children: [
-                      const TextSpan(text: "Booking Details of Booking ID: "),
-                      TextSpan(
-                          text: "${currentBookingDetails['result']['id']}",
-                          style: const TextStyle(fontWeight: FontWeight.bold))
-                    ]),
+                  style: const TextStyle(fontSize: 20, color: Colors.white),
+                  children: [
+                    const TextSpan(text: "Booking Details of Booking ID: "),
+                    TextSpan(
+                      text: currentBookingDetails?['id'] != null
+                          ? "${currentBookingDetails!['id']}"
+                          : "N/A",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -157,223 +199,218 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
             ),
 
             // Customer details card
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              width: MediaQuery.sizeOf(context).width,
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Customer details",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                          'Customer Id: ${currentBookingDetails['result']['enrolledByCustomer']['customerId']}'),
-                      Text(
-                          "Customer name: ${currentBookingDetails['result']['enrolledByCustomer']['registeredUser']['firstName']} ${currentBookingDetails['result']['enrolledByCustomer']['registeredUser']['lastName']}"),
-                      Text(
-                          "Customer username: ${currentBookingDetails['result']['enrolledByCustomer']['registeredUser']['username']}"),
-                      Text(
-                          "Job: ${currentBookingDetails['result']['enrolledByCustomer']['job']}"),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            const SizedBox(height: 16),
+            buildCustomerDetailsCard(),
 
-
+            
             // Patient list expandable
             const SizedBox(height: 16),
-
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              width: MediaQuery.sizeOf(context).width,
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Patient List",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Add ExpansionTile for foldable list
-                      ExpansionTile(
-                        title: const Text(
-                          "View Patient Details",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        children: [
-                          Column(
-                            children: [
-                              for (int i = 0;
-                                  i <
-                                      currentBookingDetails['result']
-                                              ['requestedFor']
-                                          .length;
-                                  i++)
-                                Column(
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      padding: const EdgeInsets.all(10),
-                                      child: Table(
-                                        columnWidths: const {
-                                          0: IntrinsicColumnWidth(),
-                                          1: FixedColumnWidth(20),
-                                        },
-                                        children: [
-                                          TableRow(
-                                            children: [
-                                              const Text("Patient Id "),
-                                              const Text(":"),
-                                              Text(
-                                                  "${currentBookingDetails['result']['requestedFor'][i]['patientId']}"),
-                                            ],
-                                          ),
-                                          TableRow(
-                                            children: [
-                                              const Text("Patient Name "),
-                                              const Text(":"),
-                                              Text(
-                                                  "${currentBookingDetails['result']['requestedFor'][i]['firstName']} ${currentBookingDetails['result']['requestedFor'][i]['lastName']}"),
-                                            ],
-                                          ),
-                                          TableRow(
-                                            children: [
-                                              const Text("Patient Age "),
-                                              const Text(":"),
-                                              Text(
-                                                  "${currentBookingDetails['result']['requestedFor'][i]['age']}"),
-                                            ],
-                                          ),
-                                          TableRow(
-                                            children: [
-                                              const Text("Patient Gender "),
-                                              const Text(":"),
-                                              Text(
-                                                  "${currentBookingDetails['result']['requestedFor'][i]['gender']}"),
-                                            ],
-                                          ),
-                                          TableRow(
-                                            children: [
-                                              const Text("Health Description "),
-                                              const Text(":"),
-                                              Text(
-                                                  "${currentBookingDetails['result']['requestedFor'][i]['healthDescription']}"),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                  ],
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            buildPatientList(),
 
             const SizedBox(height: 16),
             // Services required card
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              width: MediaQuery.sizeOf(context).width,
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Services Requested",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 8),
-                      Column(
-                        children: [
-                          for (int i = 0;
-                              i <
-                                  currentBookingDetails['result']
-                                          ['requestedServices']
-                                      .length;
-                              i++)
-                            Column(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(),
-                                      borderRadius: BorderRadius.circular(10)),
-                                  padding: const EdgeInsets.all(10),
-                                  child: Table(
-                                    columnWidths: const {
-                                      0: IntrinsicColumnWidth(),
-                                      1: FixedColumnWidth(20)
-                                    },
-                                    children: [
-                                      TableRow(children: [
-                                        const Text("Service Id "),
-                                        const Text(":"),
-                                        Text(
-                                            "${currentBookingDetails['result']['requestedServices'][i]['id']}")
-                                      ]),
-                                      TableRow(children: [
-                                        const Text("Service Name "),
-                                        const Text(":"),
-                                        Text(
-                                            "${currentBookingDetails['result']['requestedServices'][i]['name']}")
-                                      ]),
-                                      TableRow(children: [
-                                        const Text("Description "),
-                                        const Text(":"),
-                                        Text(
-                                            "${currentBookingDetails['result']['requestedServices'][i]['description']}")
-                                      ]),
-                                      TableRow(children: [
-                                        const Text("Value Added "),
-                                        const Text(":"),
-                                        getValue(
-                                            "${currentBookingDetails['result']['requestedServices'][i]['valueAdded']}"),
-                                      ]),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                )
-                              ],
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-
+            buildServicesRequestedCard(),
           ],
         ),
       ),
     );
   }
+
+ Widget buildCustomerDetailsCard() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      width: MediaQuery.of(context).size.width,
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Customer details",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Customer Id: ${currentBookingDetails!['enrolledByCustomer']['customerId']}',
+              ),
+              Text(
+                "Customer name: ${currentBookingDetails!['enrolledByCustomer']['registeredUser']['firstName']} ${currentBookingDetails!['enrolledByCustomer']['registeredUser']['lastName']}",
+              ),
+              Text(
+                "Customer username: ${currentBookingDetails!['enrolledByCustomer']['registeredUser']['username']}",
+              ),
+              Text(
+                "Job: ${currentBookingDetails!['enrolledByCustomer']['job']}",
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildPatientList() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      width: MediaQuery.of(context).size.width,
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Patient List",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              ExpansionTile(
+                title: const Text(
+                  "View Patient Details",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                children: [
+                  for (int i = 0;
+                      i < currentBookingDetails!['requestedFor'].length;
+                      i++)
+                    Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: Table(
+                            columnWidths: const {
+                              0: IntrinsicColumnWidth(),
+                              1: FixedColumnWidth(20),
+                            },
+                            children: [
+                              TableRow(
+                                children: [
+                                  const Text("Patient Id "),
+                                  const Text(":"),
+                                  Text(
+                                    "${currentBookingDetails!['requestedFor'][i]['patientId']}",
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  const Text("Patient Name "),
+                                  const Text(":"),
+                                  Text(
+                                    "${currentBookingDetails!['requestedFor'][i]['firstName']} ${currentBookingDetails!['requestedFor'][i]['lastName']}",
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  const Text("Patient Age "),
+                                  const Text(":"),
+                                  Text(
+                                    "${currentBookingDetails!['requestedFor'][i]['age']}",
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  const Text("Patient Gender "),
+                                  const Text(":"),
+                                  Text(
+                                    "${currentBookingDetails!['requestedFor'][i]['gender']}",
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  const Text("Health Description "),
+                                  const Text(":"),
+                                  Text(
+                                    "${currentBookingDetails!['requestedFor'][i]['healthDescription']}",
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildServicesRequestedCard() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      width: MediaQuery.of(context).size.width,
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Services Requested",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              for (int i = 0;
+                  i < currentBookingDetails!['requestedServices'].length;
+                  i++)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Divider(),
+                    Text(
+                      "${i + 1}. ${currentBookingDetails!['requestedServices'][i]['name']}",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Table(
+                      columnWidths: const {
+                        0: IntrinsicColumnWidth(),
+                        1: FixedColumnWidth(20),
+                      },
+                      children: [
+                        TableRow(
+                          children: [
+                            const Text("Description"),
+                            const Text(":"),
+                            Text(
+                              "${currentBookingDetails!['requestedServices'][i]['description']}",
+                            ),
+                          ],
+                        ),
+                        TableRow(
+                          children: [
+                            const Text("Value-added"),
+                            const Text(":"),
+                            getValue(currentBookingDetails!
+                                ['requestedServices'][i]['valueAdded']),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
 }
