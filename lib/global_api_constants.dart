@@ -30,4 +30,21 @@ String getStudentUpdateUrl(){
   return '$baseUrl/staff/students/';
 }
 
+String getPatientsForStudentUrl(){
+  return '$baseUrl/staff/patientsforstudent';
+}
+
+
+String getBRequestsForStudentUrl(){
+  return '$baseUrl/bookingrequest/student';
+}
+
+String getWorkLogUrl(){
+  return '$baseUrl/worklog';
+}
+
+String getUnifinishedWorkLogUrl(){
+  return '$baseUrl/worklog/unfinished/student';
+}
+
 

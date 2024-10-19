@@ -182,7 +182,7 @@ Future<void> _fetchStudentDetails() async {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Studentdashboard(details: widget.details),
+                    builder: (context) => StudentDashboard(details: widget.details),
                   ),
                 );
               },

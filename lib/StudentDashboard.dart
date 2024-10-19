@@ -1,12 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'Profile.dart';
-import 'StudentAssignedServices.dart';
-import 'calendar.dart';
-import 'package:http/http.dart' as http;
+import 'StudentDrawer.dart';
 
-class Studentdashboard extends StatelessWidget {
+class StudentDashboard extends StatelessWidget {
   final String firstName;
   final String lastName;
   final String token;
@@ -15,20 +10,16 @@ class Studentdashboard extends StatelessWidget {
   final int studentId;
   final Map<String, dynamic> details;
 
-  final student_name;
+  final String studentName;
 
-
-  Studentdashboard({super.key, required this.details})
-      : firstName = details['firstName'] ?? '', 
+  StudentDashboard({super.key, required this.details})
+      : firstName = details['firstName'] ?? '',
         lastName = details['lastName'] ?? '',
-        token = details['authtoken'] ?? '', 
-        email = details['email'] ?? '', 
+        token = details['authtoken'] ?? '',
+        email = details['email'] ?? '',
         id = details['id'] ?? '',
         studentId = details['studentId'] ?? 0,
-        student_name = '${details['firstName'] ?? ''} ${details['lastName'] ?? ''}' {
-        //print('Details: $details'); 
-        //print('Student ID: $studentId');  
-  }
+        studentName = '${details['firstName'] ?? ''} ${details['lastName'] ?? ''}';
 
   @override
   Widget build(BuildContext context) {
@@ -37,164 +28,26 @@ class Studentdashboard extends StatelessWidget {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.teal),
+          iconTheme: const IconThemeData(color: Colors.teal),
           actions: [
             IconButton(
               icon: const Icon(Icons.notifications, color: Colors.teal),
-              onPressed: () => {},
+              onPressed: () {},
             ),
             IconButton(
               icon: const Icon(Icons.settings, color: Colors.teal),
-              onPressed: () => {},
+              onPressed: () {},
             ),
             IconButton(
               icon: const Icon(Icons.person, color: Colors.teal),
-              onPressed: () => {},
+              onPressed: () {},
             ),
           ],
         ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              Container(
-                height: 75,
-                child: DrawerHeader(
-                    child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    RotatedBox(
-                        quarterTurns: 1,
-                        child: IconButton(
-                            onPressed: () => {Navigator.pop(context)},
-                            icon: Icon(
-                              Icons.menu,
-                              color: Colors.teal,
-                            ))),
-                    IconButton(
-                        onPressed: () => {},
-                        icon: Icon(
-                          Icons.account_circle,
-                          color: Colors.teal,
-                        )),
-                  ],
-                )),
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
-                    Icon(Icons.space_dashboard_sharp),
-                    Text('Dashboard'),
-                  ],
-                ),
-                textColor: Colors.teal,
-                iconColor: Colors.teal,
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
-                    Icon(Icons.person),
-                    Text('View Profile'),
-                  ],
-                ),
-                textColor: Colors.teal,
-                iconColor: Colors.teal,
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              OwnProfilePage(details: details, userOption: 2)));
-                },
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
-                    Icon(Icons.assignment),
-                    Text('Assignments'),
-                  ],
-                ),
-                textColor: Colors.teal,
-                iconColor: Colors.teal,
-                onTap: () async {
-                  // Show a loading indicator
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) => Center(child: CircularProgressIndicator()),
-                  );
-
-                  try {
-                    Navigator.pop(context);
-                    Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context)=>StudentAssignedServices(token:token, studentId: studentId,))
-                          ); 
-                  } catch (e) {
-                    // Handle errors by popping the loading indicator and showing an error message
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to load assignments: $e')),
-                    );
-                  }
-                },
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
-                    Icon(Icons.person),
-                    Text('Log Book'),
-                  ],
-                ),
-                textColor: Colors.teal,
-                iconColor: Colors.teal,
-                onTap: () {},
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
-                    Icon(Icons.feedback),
-                    Text('Work History'),
-                  ],
-                ),
-                textColor: Colors.teal,
-                iconColor: Colors.teal,
-                onTap: () {},
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
-                    Icon(Icons.calendar_month_sharp),
-                    Text('Calendar'),
-                  ],
-                ),
-                textColor: Colors.teal,
-                iconColor: Colors.teal,
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => HomeCalendarPage()));
-                },
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
-                    Icon(Icons.logout),
-                    Text('Logout'),
-                  ],
-                ),
-                textColor: Colors.teal,
-                iconColor: Colors.teal,
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
+        drawer: StudentDrawer(
+          details: details,
+          token: details['authtoken'] ?? '',
+          studentId: details['studentId'] ?? 0,
         ),
         body: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
@@ -206,7 +59,7 @@ class Studentdashboard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
-                    'Welcome <$student_name>',
+                    'Welcome, $studentName',
                     style: const TextStyle(
                       fontSize: 30,
                       color: Colors.teal,
@@ -218,23 +71,15 @@ class Studentdashboard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
-                    'Streamline tasks, monitor progress.sdfs..',
+                    'Streamline tasks and monitor your progress',
                     style: TextStyle(
                       color: Colors.teal[300],
                       fontSize: 16,
                     ),
                   ),
                 ),
-                const SizedBox(height: 70),
-                Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      "This is Student Dashboard",
-                      style: TextStyle(
-                        color: Colors.teal[300],
-                        fontSize: 64,
-                      ),
-                    )),
+                const SizedBox(height: 30),
+                _buildDashboardCards(context),
               ],
             ),
           ),
@@ -243,7 +88,98 @@ class Studentdashboard extends StatelessWidget {
     );
   }
 
-  
+  Widget _buildDashboardCards(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          // Card for Upcoming Tasks
+          Card(
+            elevation: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Upcoming Tasks',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Add a list of upcoming tasks or notifications here
+                  Text('1. Submit project report by Friday'),
+                  Text('2. Attend group meeting on Saturday'),
+                  Text('3. Review service feedback'),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Card for Assigned Services
+          Card(
+            elevation: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Assigned Services',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Add a list of assigned services or a button to navigate
+                  ElevatedButton(
+                    onPressed: () {
+                      // Navigate to assigned services page
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal, // Button color
+                    ),
+                    child: const Text('View Assigned Services'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Card for Performance Overview
+          Card(
+            elevation: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Performance Overview',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Placeholder for performance statistics
+                  Text('Tasks Completed: 5/10'),
+                  Text('Pending Feedback: 2'),
+                  Text('Average Rating: 4.5/5'),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
-
-
