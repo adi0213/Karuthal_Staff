@@ -48,5 +48,10 @@ String getUnifinishedWorkLogUrl(){
 }
 
 
+String getAssignStudentUrl(){
+  return '$baseUrl/staff/assignstudents';
+}
+
+
 
 

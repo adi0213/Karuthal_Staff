@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'ManagerDashboard.dart';
 import 'common/ManagerDrawer.dart';
 import 'common/bookingrequest_cards.dart';
 import 'common/patient.dart';
@@ -116,6 +117,14 @@ class _AssignServiceState extends State<AssignService> {
 
       if (jsonResponse['status'] == 200) {
         List<dynamic> bookingRequests = jsonResponse['result'];
+        if (bookingRequests.isEmpty) {
+          setState(() {
+            currentBookingDetails = null; // No bookings to display
+          });
+          _showNoPendingBookingsDialog(); // Notify user with a dialog or a message
+          return [];
+        }
+
         List<int> bookingRequestIds = bookingRequests
             .map((bookingRequest) => bookingRequest['id'] as int)
             .toList();
@@ -235,127 +244,140 @@ class _AssignServiceState extends State<AssignService> {
               ],
             ),
 
-        // Detailed Search Section
-const SizedBox(height: 16),
-Container(
-  width: MediaQuery.of(context).size.width * 0.8,
-  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-  margin: const EdgeInsets.only(left: 16.0), // Add left margin here
-  decoration: BoxDecoration(
-  
-    borderRadius: BorderRadius.circular(12), // Rounded corners
-    border: Border.all(color: Colors.teal), // Border color
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black12, // Shadow color
-        blurRadius: 8.0, // Spread of shadow
-        offset: Offset(0, 2), // Position of shadow
-      ),
-    ],
-  ),
-  child: Column(
-    // Use Column to allow stacking the search fields and results
-    children: [
-        Container(
-          padding: const EdgeInsets.all(16.0), // Add padding for spacing
-          decoration: BoxDecoration(
-            color: Colors.teal, // Set background color to teal
-            borderRadius: BorderRadius.circular(12), // Round edges
-          ),
-          child: const Text(
-            "Search Available Students", // Header for the search section
-            style: TextStyle(
-              fontSize: 24,
-              color: Colors.white, // Text color
-              fontWeight: FontWeight.bold, // Bold text
-            ),
-          ),
-        ),
-
-      const SizedBox(height: 16), // Spacing between header and input fields
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space items evenly
-        children: [
-          Expanded(
-            // Wrap each TextField in an Expanded widget to occupy available space
-            child: TextField(
-              controller: lastNameController,
-              decoration: const InputDecoration(
-                labelText: 'Last Name',
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white), // Focus border color
-                ),
-              ),
-              style: const TextStyle(color: Colors.white), // Change text color to white
-              cursorColor: Colors.white, // Change cursor color to white
-            ),
-          ),
-          const SizedBox(width: 8), // Spacing between fields
-          Expanded(
-            child: TextField(
-              controller: emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white), // Focus border color
-                ),
-              ),
-              style: const TextStyle(color: Colors.white), // Change text color to white
-              cursorColor: Colors.white, // Change cursor color to white
-            ),
-          ),
-          const SizedBox(width: 8), // Spacing between fields
-          ElevatedButton(
-            onPressed: searchStudents,
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.teal, // Button text color
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8), // Rounded button
-              ),
-            ),
-            child: const Text('Search'),
-          ),
-        ],
-      ),
-      // Display search results
-      const SizedBox(height: 16),
-      isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: searchResults.length,
-              itemBuilder: (context, index) {
-                final student = searchResults[index];
-                return CheckboxListTile(
-                  title: Text(
-                    '${student.firstName} ${student.lastName}',
-                    style: const TextStyle(color: Colors.black),
+            // Detailed Search Section
+            const SizedBox(height: 16),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              margin: const EdgeInsets.only(left: 16.0), // Add left margin here
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12), // Rounded corners
+                border: Border.all(color: Colors.teal), // Border color
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12, // Shadow color
+                    blurRadius: 8.0, // Spread of shadow
+                    offset: Offset(0, 2), // Position of shadow
                   ),
-                  subtitle: Text(
-                    student.email,
-                    style: const TextStyle(color: Colors.black),
+                ],
+              ),
+              child: Column(
+                // Use Column to allow stacking the search fields and results
+                children: [
+                  Container(
+                    padding:
+                        const EdgeInsets.all(16.0), // Add padding for spacing
+                    decoration: BoxDecoration(
+                      color: Colors.teal, // Set background color to teal
+                      borderRadius: BorderRadius.circular(12), // Round edges
+                    ),
+                    child: const Text(
+                      "Search Available Students", // Header for the search section
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Colors.white, // Text color
+                        fontWeight: FontWeight.bold, // Bold text
+                      ),
+                    ),
                   ),
-                  value: selectedStudents.contains(student.studentId), // Check if student ID is selected
-                  onChanged: (isSelected) {
-                    setState(() {
-                      if (isSelected == true) {
-                        selectedStudents.add(student.studentId); // Add student ID to selected list
-                      } else {
-                        selectedStudents.remove(student.studentId); // Remove student ID from selected list
-                      }
-                    });
-                  },
-                );
-              },
-            ),
-    ],
-  ),
-),
 
+                  const SizedBox(
+                      height: 16), // Spacing between header and input fields
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween, // Space items evenly
+                    children: [
+                      Expanded(
+                        // Wrap each TextField in an Expanded widget to occupy available space
+                        child: TextField(
+                          controller: lastNameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Last Name',
+                            border: OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.white), // Focus border color
+                            ),
+                          ),
+                          style: const TextStyle(
+                              color:
+                                  Colors.white), // Change text color to white
+                          cursorColor:
+                              Colors.white, // Change cursor color to white
+                        ),
+                      ),
+                      const SizedBox(width: 8), // Spacing between fields
+                      Expanded(
+                        child: TextField(
+                          controller: emailController,
+                          decoration: const InputDecoration(
+                            labelText: 'Email',
+                            border: OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.white), // Focus border color
+                            ),
+                          ),
+                          style: const TextStyle(
+                              color:
+                                  Colors.white), // Change text color to white
+                          cursorColor:
+                              Colors.white, // Change cursor color to white
+                        ),
+                      ),
+                      const SizedBox(width: 8), // Spacing between fields
+                      ElevatedButton(
+                        onPressed: searchStudents,
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.teal, // Button text color
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(8), // Rounded button
+                          ),
+                        ),
+                        child: const Text('Search'),
+                      ),
+                    ],
+                  ),
+                  // Display search results
+                  const SizedBox(height: 16),
+                  isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: searchResults.length,
+                          itemBuilder: (context, index) {
+                            final student = searchResults[index];
+                            return CheckboxListTile(
+                              title: Text(
+                                '${student.firstName} ${student.lastName}',
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              subtitle: Text(
+                                student.email,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              value: selectedStudents.contains(student
+                                  .studentId), // Check if student ID is selected
+                              onChanged: (isSelected) {
+                                setState(() {
+                                  if (isSelected == true) {
+                                    selectedStudents.add(student
+                                        .studentId); // Add student ID to selected list
+                                  } else {
+                                    selectedStudents.remove(student
+                                        .studentId); // Remove student ID from selected list
+                                  }
+                                });
+                              },
+                            );
+                          },
+                        ),
+                ],
+              ),
+            ),
 
             const SizedBox(height: 10),
 
@@ -449,9 +471,102 @@ Container(
     }
   }
 
-  void submitSelectedStudents() {
-    // Handle the submission of selected students
-    // For example, send them to another screen or process them
+  Future<void> submitSelectedStudents() async {
     print('Selected Students: $selectedStudents');
+
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${widget.token}',
+    };
+
+    // Prepare the payload
+    final Map<String, dynamic> payload = {
+      "managerId": widget.managerId, // Manager ID
+      "bookingRequestId": currentBookingDetails!['id'], // Booking request ID
+      "studentIds": selectedStudents, // Selected student IDs
+    };
+
+    try {
+      // Send PUT request
+      final response = await http.put(
+        Uri.parse(getAssignStudentUrl()), // Update URL as needed
+        headers: headers,
+        body: jsonEncode(payload), // Convert payload to JSON
+      );
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse['status'] == 200) {
+          print('This booking request is assigned to students successfully');
+          _showSuccessDialog(
+              'This booking request is assigned to students successfully');
+        } else {
+          throw Exception(
+              'Failed to assign students: ${jsonResponse['message']}');
+        }
+      } else {
+        throw Exception('Failed to assign students');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Success'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        Managerdashboard(details: widget.details),
+                  ),
+                );
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  void _showNoPendingBookingsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('No Pending Bookings'),
+          content: const Text('There are no pending booking requests at the moment.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        Managerdashboard(details: widget.details),
+                  ),
+                ); // Navigate to the dashboard
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
 }
