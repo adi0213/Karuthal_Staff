@@ -39,14 +39,16 @@ class _CompleteWorkLogFormState extends State<CompleteWorkLogForm> {
       'Authorization': 'Bearer ${widget.token}',
     };
     final uri = Uri.parse('${getUnifinishedWorkLogUrl()}/${widget.studentId}');
-    print('Fetching pending work log from: $uri');
+    //print('Fetching pending work log from: $uri');
     final response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+       
       if (jsonResponse['status'] == 200) {
         setState(() {
-          _workLogDetails = jsonResponse['result']; // Only one work log now
+          _workLogDetails = jsonResponse['result']; 
+           //print('_workLogDetails: $_workLogDetails');
           if (_workLogDetails != null) {
             _workDescription = _workLogDetails!['workDescription'] ?? '';
             _workStartTime = DateTime.parse(_workLogDetails!['workStartTime']);

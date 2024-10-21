@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'CompleteTheWork.dart';
 import 'Profile.dart';
 import 'StudentAssignedServices.dart';
+import 'StudentEnrollment.dart';
 import 'StudentWorkLog.dart';
 import 'StudentWorklogHistory.dart';
 import 'calendar.dart';
@@ -74,7 +75,7 @@ class StudentDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => OwnProfilePage(details: details, userOption: 2),
+                  builder: (context) => StudentSelfEnrollment(details: details),
                 ),
               );
             },
