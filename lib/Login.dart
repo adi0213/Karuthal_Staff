@@ -57,7 +57,7 @@ class _LoginState extends State<Login> {
         var result = responseBody['result'];
         if (responseBody['result'] != null) {
           var roles = result['assignedRoles'];
-          //print(result);
+          print(result);
           if (roles != null && roles.contains('STUDENT')) {
             _emailController.clear();
             _passwordController.clear();

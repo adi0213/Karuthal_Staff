@@ -39,6 +39,10 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
 
       if (bookingRequestIds.isNotEmpty) {
         await getBookingDetails(bookingRequestIds[currentIndex]);
+      } else {
+        setState(() {
+          currentBookingDetails = null;
+        });
       }
     } catch (e) {
       print("Error: $e");
@@ -52,27 +56,40 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
       'Authorization': 'Bearer ${widget.token}',
     };
 
-    final response = await http.get(
-      Uri.parse('${getBookingRequestsUrl()}/student/${widget.studentId}'),
-      headers: headers,
-    );
+    try {
+      final response = await http.get(
+        Uri.parse('${getBookingRequestsUrl()}/student/${widget.studentId}'),
+        headers: headers,
+      );
 
-    if (response.statusCode == 200) {
-      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
-      if (jsonResponse['status'] == 200) {
-        List<dynamic> bookingRequests = jsonResponse['result'];
-        List<int> bookingRequestIds = bookingRequests
-            .map((bookingRequest) => bookingRequest['id'] as int)
-            .toList();
-        //print('Booking request IDs: $bookingRequestIds');
-        return bookingRequestIds;
+        if (jsonResponse['status'] == 200) {
+          List<dynamic>? bookingRequests = jsonResponse['result'];
+
+          // Check if bookingRequests is null or empty
+          if (bookingRequests == null || bookingRequests.isEmpty) {
+            print('No booking requests available');
+            return []; // Return an empty list when there are no results
+          }
+
+          List<int> bookingRequestIds = bookingRequests
+              .map((bookingRequest) => bookingRequest['id'] as int)
+              .toList();
+
+          return bookingRequestIds;
+
+        } else {
+          throw Exception(
+              'Failed to retrieve booking requests: ${jsonResponse['message']}');
+        }
       } else {
-        throw Exception(
-            'Failed to retrieve booking requests: ${jsonResponse['message']}');
+        throw Exception('Failed to load assignments');
       }
-    } else {
-      throw Exception('Failed to load assignments');
+    } catch (e) {
+      print('Error fetching assignments: $e');
+      return []; // Return an empty list in case of an error
     }
   }
 
@@ -97,25 +114,13 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
           currentBookingDetails = bookingDetailsResponse['result'];
         });
       } else {
-        // Handle non-200 responses
         final errorDetails = jsonDecode(response.body);
         throw Exception(
             'Failed to load booking details: ${errorDetails['message']}');
       }
     } catch (e) {
-      // Handle exceptions (e.g., network issues)
       print('Error fetching booking details: $e');
       throw Exception('An error occurred while fetching booking details: $e');
-    }
-  }
-
-  Widget getValue(dynamic data) {
-    if (data is bool) {
-      return Text(data ? "Yes" : "No");
-    } else if (data is String) {
-      return Text(data);
-    } else {
-      return const Text("Unknown");
     }
   }
 
@@ -133,105 +138,101 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (currentBookingDetails == null) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.account_circle)),
-        ],
-      ),
-      drawer: StudentDrawer(
-        details: widget.details,
-        token: widget.details['authtoken'] ?? '',
-        studentId: widget.details['studentId'] ?? 0,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              color: Colors.teal,
-              width: MediaQuery.of(context).size.width,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+ @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: Colors.white,
+      actions: [
+        IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.account_circle)),
+      ],
+    ),
+    drawer: StudentDrawer(
+      details: widget.details,
+      token: widget.details['authtoken'] ?? '',
+      studentId: widget.details['studentId'] ?? 0,
+    ),
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          color: Colors.teal,
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: RichText(
+                  text: const TextSpan(
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    children: [
+                      TextSpan(text: "Booking Details"),
+                    ],
+                  ),
+                ),
+              ),
+             
+            ],
+          ),
+        ),
+        if (bookingRequestIds.isEmpty && currentBookingDetails == null)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Text(
+                'No booking requests available.',
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+          )
+        else if (currentBookingDetails == null)
+          const Center(child: CircularProgressIndicator())
+        else
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        style:
-                            const TextStyle(fontSize: 20, color: Colors.white),
-                        children: [
-                          const TextSpan(
-                              text: "Booking Details of Booking ID: "),
-                          TextSpan(
-                            text: currentBookingDetails?['id'] != null
-                                ? "${currentBookingDetails!['id']}"
-                                : "N/A",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
+                  // Pagination Controls
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_left),
+                        onPressed: previousBooking,
                       ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context); // Navigate back to the dashboard
-                    },
-                    child: const Text(
-                      'Go Back to Dashboard',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        'Page ${currentIndex + 1} of ${bookingRequestIds.length}',
                       ),
-                    ),
+                      IconButton(
+                        icon: const Icon(Icons.arrow_right),
+                        onPressed: nextBooking,
+                      ),
+                    ],
                   ),
+
+                  const SizedBox(height: 16),
+                  buildCustomerDetailsCard(
+                      currentBookingDetails!['enrolledByCustomer'], context),
+
+                  const SizedBox(height: 16),
+                  buildPatientList(
+                      currentBookingDetails!['requestedFor'], context),
+
+                  const SizedBox(height: 16),
+                  buildServicesRequestedCard(
+                      currentBookingDetails!['requestedServices'], context),
                 ],
               ),
             ),
+          ),
+      ],
+    ),
+  );
+}
 
-            // Pagination Controls
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_left),
-                  onPressed: previousBooking,
-                ),
-                Text('Page ${currentIndex + 1} of ${bookingRequestIds.length}'),
-                IconButton(
-                  icon: const Icon(Icons.arrow_right),
-                  onPressed: nextBooking,
-                ),
-              ],
-            ),
 
-            // Customer details card
-            const SizedBox(height: 16),
-            buildCustomerDetailsCard(
-                currentBookingDetails!['enrolledByCustomer'], context),
-
-            // Patient list expandable
-            const SizedBox(height: 16),
-            buildPatientList(currentBookingDetails!['requestedFor'], context),
-
-            const SizedBox(height: 16),
-            // Services required card
-            buildServicesRequestedCard(
-                currentBookingDetails!['requestedServices'], context),
-          ],
-        ),
-      ),
-    );
-  }
 }

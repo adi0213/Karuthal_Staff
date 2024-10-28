@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 import 'StudentDashboard.dart';
+import 'StudentDrawer.dart';
 import 'common/formfields.dart';
 import 'common/personalizedService.dart';
 import 'global_api_constants.dart';
@@ -205,6 +206,13 @@ Future<void> _fetchStudentDetails() async {
       title: const Text('Student Self-Enrollment'),
       backgroundColor: const Color(0xFF38A3A5),
     ),
+
+    drawer: StudentDrawer(
+      details: widget.details,
+      token: widget.token,
+      studentId: widget.studentId,
+    ),
+
     body: Padding(
       padding: const EdgeInsets.all(20.0),
       child: Form(

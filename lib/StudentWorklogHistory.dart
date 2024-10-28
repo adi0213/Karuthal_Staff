@@ -31,29 +31,35 @@ class _StudentWorkLogHistoryState extends State<StudentWorkLogHistory> {
     _fetchWorkLogs();
   }
 
-  Future<void> _fetchWorkLogs() async {
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${widget.token}',
-    };
-    final uri = Uri.parse('${getWorkLogUrl()}/student/${widget.studentId}');
-    //print('Fetching work logs from: $uri');
-    
+Future<void> _fetchWorkLogs() async {
+  final Map<String, String> headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ${widget.token}',
+  };
+  final uri = Uri.parse('${getWorkLogUrl()}/student/${widget.studentId}');
+  
+  try {
     final response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
       if (jsonResponse['status'] == 200) {
         setState(() {
           _workLogs = jsonResponse['result'];
+
+          // Handle null or empty result
+          if (_workLogs == null || _workLogs.isEmpty) {
+            _workLogs = [];  // Set an empty list if result is null or empty
+          }
         });
-      } else {
-        throw Exception('Failed to retrieve work logs: ${jsonResponse['message']}');
-      }
-    } else {
-      throw Exception('Failed to load work logs');
-    }
+      } 
+    } 
+  } catch (e) {
+    // Handle other potential exceptions, such as network issues
+    print('Error fetching work logs: $e');   
   }
+}
 
   // Method to get the logs for the current page
   List<dynamic> getCurrentPageLogs() {
@@ -79,73 +85,79 @@ class _StudentWorkLogHistoryState extends State<StudentWorkLogHistory> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Work Log History'),
-        backgroundColor: Colors.teal,
-      ),
-      drawer: StudentDrawer(
-        details: widget.details,
-        token: widget.token,
-        studentId: widget.studentId,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _workLogs.isEmpty
-            ? Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16.0),
-                    color: Colors.teal,
-                    width: MediaQuery.of(context).size.width,
-                    child: Text(
-                      'Page ${_currentPage + 1} of ${(_workLogs.length / _pageSize).ceil()}',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: getCurrentPageLogs().length,
-                      itemBuilder: (context, index) {
-                        final workLog = getCurrentPageLogs()[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: ListTile(
-                            title: Text('Log ID: ${workLog['logId']}'),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Description: ${workLog['workDescription']}'),
-                                Text('Start Time: ${workLog['workStartTime']}'),
-                                Text('End Time: ${workLog['workEndTime']}'),
-                                Text('Duration: ${workLog['duration']}'),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_left),
-                        onPressed: _previousPage,
-                      ),
-                      Text('Page ${_currentPage + 1} of ${(_workLogs.length / _pageSize).ceil()}'),
-                      IconButton(
-                        icon: const Icon(Icons.arrow_right),
-                        onPressed: _nextPage,
-                      ),
-                    ],
-                  ),
-                ],
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('Work Log History'),
+      backgroundColor: Colors.teal,
+    ),
+    drawer: StudentDrawer(
+      details: widget.details,
+      token: widget.token,
+      studentId: widget.studentId,
+    ),
+    body: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: _workLogs.isEmpty
+          ? Center(
+              child: Text(
+                'No work logs available',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
-      ),
-    );
-  }
+            )
+          : Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  color: Colors.teal,
+                  width: MediaQuery.of(context).size.width,
+                  child: Text(
+                    'Page ${_currentPage + 1} of ${(_workLogs.length / _pageSize).ceil()}',
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: getCurrentPageLogs().length,
+                    itemBuilder: (context, index) {
+                      final workLog = getCurrentPageLogs()[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: ListTile(
+                          title: Text('Log ID: ${workLog['logId']}'),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Description: ${workLog['workDescription']}'),
+                              Text('Start Time: ${workLog['workStartTime']}'),
+                              Text('End Time: ${workLog['workEndTime']}'),
+                              Text('Duration: ${workLog['duration']}'),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_left),
+                      onPressed: _previousPage,
+                    ),
+                    Text('Page ${_currentPage + 1} of ${(_workLogs.length / _pageSize).ceil()}'),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_right),
+                      onPressed: _nextPage,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+    ),
+  );
+}
+
 }

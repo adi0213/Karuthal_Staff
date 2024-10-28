@@ -5,6 +5,7 @@ import 'StudentAssignedServices.dart';
 import 'StudentEnrollment.dart';
 import 'StudentWorkLog.dart';
 import 'StudentWorklogHistory.dart';
+import 'WelcomePage.dart';
 import 'calendar.dart';
 import 'StudentDashboard.dart';
 
@@ -175,10 +176,21 @@ class StudentDrawer extends StatelessWidget {
             textColor: Colors.teal,
             iconColor: Colors.teal,
             onTap: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
+              // Clear any session-related data here
+              // e.g., clear token or user info from local storage
+
+              // Navigate to the login screen and clear the navigation stack
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => WelcomePage(),  // Replace with your actual login screen
+                ),
+                (Route<dynamic> route) => false,  // Removes all previous routes
+              );
             },
           ),
+
+
         ],
       ),
     );
