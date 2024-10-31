@@ -53,5 +53,13 @@ String getAssignStudentUrl(){
 }
 
 
+String getChangePasswordOtpUrl(){
+  return '$baseUrl/email/sendpasswordchangeotp';
+}
+
+String getChangePasswordUrl(){
+  return '$baseUrl/';
+}
+
 
 

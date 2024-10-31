@@ -157,27 +157,33 @@ Widget build(BuildContext context) {
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          padding: const EdgeInsets.all(16.0),
-          color: Colors.teal,
-          width: MediaQuery.of(context).size.width,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: RichText(
-                  text: const TextSpan(
-                    style: TextStyle(fontSize: 20, color: Colors.white),
-                    children: [
-                      TextSpan(text: "Booking Details"),
-                    ],
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              color: Colors.teal,
+              width: MediaQuery.of(context).size.width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(
+                        style: const TextStyle(fontSize: 20, color: Colors.white),
+                        children: [
+                          const TextSpan(text: "Booking Details: "),
+                          TextSpan(
+                            text: (currentBookingDetails != null && currentBookingDetails!['id'] != null)
+                                ? currentBookingDetails!['id'].toString()
+                                : "N/A",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-             
-            ],
-          ),
-        ),
+            ),
+
         if (bookingRequestIds.isEmpty && currentBookingDetails == null)
           const Center(
             child: Padding(

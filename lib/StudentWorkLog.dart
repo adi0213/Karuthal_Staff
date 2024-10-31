@@ -166,8 +166,8 @@ class _WorkLogFormState extends State<WorkLogForm> {
               SizedBox(height: 10),
               if (_selectedBookingDetails != null) ...[
                 Text(
-                  'Enrolled By: ${_selectedBookingDetails!['enrolledByCustomer']['firstName']} '
-                  '${_selectedBookingDetails!['enrolledByCustomer']['lastName']}',
+                  'Enrolled By:  '
+                  '${_selectedBookingDetails!['enrolledByCustomer']['registeredUser']['email']}',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 5),

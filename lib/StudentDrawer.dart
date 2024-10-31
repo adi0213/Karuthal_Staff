@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'ChangePasswordPage.dart';
 import 'CompleteTheWork.dart';
 import 'Profile.dart';
 import 'StudentAssignedServices.dart';
@@ -6,8 +7,10 @@ import 'StudentEnrollment.dart';
 import 'StudentWorkLog.dart';
 import 'StudentWorklogHistory.dart';
 import 'WelcomePage.dart';
-import 'calendar.dart';
 import 'StudentDashboard.dart';
+import 'package:http/http.dart' as http;
+
+import 'global_api_constants.dart';
 
 class StudentDrawer extends StatelessWidget {
   final Map<String, dynamic> details;
@@ -16,6 +19,30 @@ class StudentDrawer extends StatelessWidget {
 
   StudentDrawer({required this.details, required this.token, required this.studentId});
 
+
+  Future<void> sendOtpForPasswordChange(BuildContext context) async {
+    final url = Uri.parse(getChangePasswordOtpUrl()); 
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: '{"studentId": $studentId}',
+    );
+
+    if (response.statusCode == 200) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ChangePasswordPage(token: token)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to send OTP')),
+      );
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -110,6 +137,30 @@ class StudentDrawer extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Failed to load assignments: $e')),
                 );
+              }
+            },
+          ),
+
+          ListTile(
+            title: const Row(
+              children: [
+                Icon(Icons.lock),
+                Text('Change Password'),
+              ],
+            ),
+            textColor: Colors.teal,
+            iconColor: Colors.teal,
+            onTap: () async {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => Center(child: CircularProgressIndicator()),
+              );
+
+              try {
+                await sendOtpForPasswordChange(context);
+              } finally {
+                Navigator.pop(context);  // Remove the loading indicator
               }
             },
           ),
