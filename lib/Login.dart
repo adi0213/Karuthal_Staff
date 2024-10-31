@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:chilla_staff/StudentEnrollment.dart';
 import 'package:chilla_staff/staffDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,6 +9,7 @@ import '/Error.dart';
 import '/design.dart';
 import 'ManagerDashboard.dart';
 import 'StudentDashboard.dart';
+import 'global_api_constants.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -25,8 +27,8 @@ class _LoginState extends State<Login> {
   bool _isPasswordVisible = false;
 
   Future<void> _login() async {
-    const String url =
-        'http://104.237.9.211:8007/karuthal/api/v1/usermanagement/login';
+    String url = loginUrl();
+
     final Map<String, dynamic> body = {
       "username": _emailController.text,
       "password": _passwordController.text,
@@ -51,49 +53,92 @@ class _LoginState extends State<Login> {
       });
 
       if (response.statusCode == 200) {
-        print(response.body);
-        print(jsonDecode(response.body)["assignedRoles"].contains('STUDENT'));
-        if (jsonDecode(response.body)["assignedRoles"].contains('STUDENT')) {
-          _emailController.clear();
-          _passwordController.clear();
-          Navigator.push(
-            context,
-            MaterialPageRoute(
+        final responseBody = jsonDecode(response.body);
+        var result = responseBody['result'];
+        if (responseBody['result'] != null) {
+          var roles = result['assignedRoles'];
+          print(result);
+          if (roles != null && roles.contains('STUDENT')) {
+            _emailController.clear();
+            _passwordController.clear();
+            if (result['registered'] == false) {
+              // Redirect to Student Self Enrollment Form
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StudentSelfEnrollment(details: result),
+                ),
+              );
+            } else {
+              // Proceed with normal student dashboard
+              _emailController.clear();
+              _passwordController.clear();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      StudentDashboard(details: result),
+                ),
+              );
+            }
+          } else if (roles.contains('MANAGER')) {
+            _emailController.clear();
+            _passwordController.clear();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
                 builder: (context) =>
-                    Studentdashboard(details: jsonDecode(response.body))),
-          );
-        } else if (jsonDecode(response.body)["assignedRoles"]
-            .contains('Manager')) {
-          _emailController.clear();
-          _passwordController.clear();
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => Managerdashboard(
-                      details: jsonDecode(response.body),
-                    )),
-          );
-        } else if (jsonDecode(response.body)["assignedRoles"]
-            .contains('Customer')) {
-          print("Not a Staff");
+                    Managerdashboard(details: responseBody['result']),
+              ),
+            );
+          } else if (roles.contains('CUSTOMER')) {
+            print("Not a Staff");
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                backgroundColor: Color(0xFF57CC99),
+                content: Text(
+                  'Not a Staff',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => StaffDashboard(
+                  loginOption: 4,
+                  roles: roles,
+                ),
+              ),
+            );
+          }
+        }
+        else{
+          print(responseBody['status']);
+          if (responseBody['status'] == 401) {
+            print("Hello2");
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               backgroundColor: Color(0xFF57CC99),
               content: Text(
-                'Not a Staff',
-                style: TextStyle(color: Colors.black),
+                "${responseBody['message']}",
+                style: const TextStyle(color: Colors.black),
               ),
             ),
           );
-        } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => StaffDashboard(
-                      loginOption: 4,
-                      roles: jsonDecode(response.body)["assignedRoles"],
-                    )),
+        }
+        else if(responseBody['status'] == 403){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Color(0xFF57CC99),
+              content: Text(
+                "${responseBody['message']}",
+                style: const TextStyle(color: Colors.black),
+              ),
+            ),
           );
+        }
         }
       } else {
         print('Login failed with status code: ${response.statusCode}');

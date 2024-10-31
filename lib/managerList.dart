@@ -5,17 +5,16 @@ import 'dart:convert';
 
 class ManagerList extends StatefulWidget {
   final String token;
-  const ManagerList({super.key,required this.token});
+  const ManagerList({super.key, required this.token});
   @override
   State<ManagerList> createState() => _ManagerListState();
 }
 
 class _ManagerListState extends State<ManagerList> {
-
   late Future<List> ManagerList;
   List managers = [];
 
-  Future<List> getManagerDetails() async{
+  Future<List> getManagerDetails() async {
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${widget.token}'
@@ -28,7 +27,7 @@ class _ManagerListState extends State<ManagerList> {
     return managerDetailsList['result'];
   }
 
-  void initState(){
+  void initState() {
     super.initState();
     ManagerList = getManagerDetails();
   }
@@ -45,38 +44,13 @@ class _ManagerListState extends State<ManagerList> {
             color: Colors.white,
           ),
         ),
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: Icon(Icons.menu, color: Colors.white),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
           },
-        ),
-        actions: [
-          ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Icon(Icons.arrow_left))
-        ],
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            ListTile(
-                title: const Row(
-                  children: [
-                    Icon(Icons.arrow_left),
-                    Text('Go back'),
-                  ],
-                ),
-                textColor: Colors.teal,
-                iconColor: Colors.teal,
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-              ),
-          ],
+          icon: Icon(Icons.arrow_back),
+          color: Color.fromARGB(255, 255, 255, 255),
         ),
       ),
       body: Column(
@@ -101,12 +75,9 @@ class _ManagerListState extends State<ManagerList> {
                 padding: EdgeInsets.symmetric(horizontal: 12),
                 child: TextField(
                   decoration: InputDecoration(
-                    icon: Icon(Icons.search),
-                    hintText: "Search by Username",
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none
-                    )
-                  ),
+                      icon: Icon(Icons.search),
+                      hintText: "Search by Username",
+                      border: OutlineInputBorder(borderSide: BorderSide.none)),
                   onChanged: searchPerson,
                 ),
               ),
@@ -130,7 +101,7 @@ class _ManagerListState extends State<ManagerList> {
 
   Future<List> _filterCustomers(String query) async {
     if (query.isEmpty) {
-      return await getManagerDetails(); 
+      return await getManagerDetails();
     }
 
     final filteredCustomers = (await getManagerDetails()).where((customer) {
@@ -142,19 +113,16 @@ class _ManagerListState extends State<ManagerList> {
     return filteredCustomers;
   }
 
-
   Widget getList() {
     return FutureBuilder<List>(
       future: ManagerList,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator()); 
-        }
-        else if (snapshot.hasError) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
           return Center(child: Text("Error: ${snapshot.error}"));
-        }
-        else if (snapshot.hasData) {
-          managers = snapshot.data ?? []; 
+        } else if (snapshot.hasData) {
+          managers = snapshot.data ?? [];
           if (managers.isEmpty) {
             return Center(child: Text("No customers available"));
           }
@@ -168,9 +136,10 @@ class _ManagerListState extends State<ManagerList> {
                     onTap: () => {
                       print(manager),
                       Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context)=> ProfilePage(details: manager, userOption: 3))
-                      )
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ProfilePage(details: manager, userOption: 3)))
                     },
                     child: buildServiceItem(
                       manager['registeredUser']['username']!,
@@ -183,14 +152,13 @@ class _ManagerListState extends State<ManagerList> {
             },
           );
         }
-        return Center(child: Text("No data available")); 
+        return Center(child: Text("No data available"));
       },
     );
   }
 
-  Widget buildServiceItem(
-      String username, String email) {
-        print('$username ,$email');
+  Widget buildServiceItem(String username, String email) {
+    print('$username ,$email');
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
       child: Row(

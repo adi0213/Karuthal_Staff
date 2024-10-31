@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 //import 'Profile.dart';
 
 class WorkHistory extends StatefulWidget {
+  final int studentId;
   final String token;
-  const WorkHistory({super.key,required this.token});
+  const WorkHistory({super.key,required this.studentId,required this.token});
   @override
   State<WorkHistory> createState() => _WorkHistoryState();
 }

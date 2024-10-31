@@ -1,11 +1,11 @@
 import 'dart:convert';
-import '/StaffRegistration.dart';
-import '/Login.dart';
-import '/design.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'UserWaitingPage.dart';
+import 'global_api_constants.dart';
 
 class CreateAccount extends StatefulWidget {
   static String bearerToken = "";
@@ -19,19 +19,18 @@ class _CreateAccountState extends State<CreateAccount> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _PhoneNumberController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  bool _isPasswordVisible = false;
+  String? _selectedRole = 'Student'; // Default selected role
 
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
 
-    const String apiUrl =
-        'http://104.237.9.211:8007/karuthal/api/v1/persona/signup';
+    String apiUrl = getSignupUrl();
 
     final Map<String, dynamic> requestData = {
+      'mobile': _PhoneNumberController.text.trim(),
       'email': _emailController.text.trim(),
-      'password': _passwordController.text.trim(),
-      "persona": "student"
+      'persona':
+          _selectedRole!.toLowerCase(), // Sending selected role in lowercase
     };
 
     try {
@@ -44,59 +43,59 @@ class _CreateAccountState extends State<CreateAccount> {
         body: json.encode(requestData),
       );
 
-      if (response.statusCode == 200) {
-        await _login();
+      // Decode the response body
+      final responseData = json.decode(response.body);
+
+      // Print the response data for debugging purposes
+      print('Response data: $responseData');
+
+      // Check if the 'status' field exists in the response
+      if (responseData['status'] == 200) {
+        print('Status 200: Account created successfully.');
+        // Show success dialog and navigate to UserWaitingPage
+        _showSuccessDialog('Account created successfully!', UserWaitingPage());
+      } else if (responseData['status'] == 406) {
+        print('Status 406: Username or email already taken.');
+
+        // Handle the specific error for username/email already taken
+        String errorMessage = responseData['message'] ?? 'An error occurred.';
+        print('Error message: $errorMessage');
+
+        // Show error dialog with the specific message
+        _showErrorDialog(errorMessage);
       } else {
+        print('Other status code: ${responseData['status']}');
+        // Handle other status codes
         _showErrorDialog('Failed to create account. Please try again.');
       }
     } catch (e) {
-      print(e);
+      // Handle any exceptions or errors
+      print('Error occurred: $e');
       _showErrorDialog('Error occurred. Please try again later.');
     }
   }
 
-  Future<void> _login() async {
-    const String url =
-        'http://104.237.9.211:8007/karuthal/api/v1/usermanagement/login';
-    final Map<String, dynamic> body = {
-      "username": _emailController.text,
-      "password": _passwordController.text,
-    };
-
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: headers,
-        body: json.encode(body),
-      );
-
-      if (response.statusCode == 200) {
-        print(response.body);
-        final responseData = json.decode(response.body);
-        CreateAccount.bearerToken = responseData['authtoken'];
-        print(CreateAccount.bearerToken);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => StaffRegistration(
-                  email: _emailController.text,
-                  token: CreateAccount.bearerToken,
-                  roles: jsonDecode(response.body)["assignedRoles"])),
-        );
-      } else {
-        //ScaffoldMessenger.of(context).showCustomSnackBar(context, "ERROR\nInvalid Entry");
-        print('Login failed with status code: ${response.statusCode}');
-        print('Error message: ${response.body}');
-      }
-    } catch (e) {
-      //ScaffoldMessenger.of(context).showCustomSnackBar(context, "Network Error");
-      print('Error occurred: $e');
-    }
+  void _showSuccessDialog(String message, Widget page) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Success'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => page),
+              ); // Navigate to the new page
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showErrorDialog(String message) {
@@ -140,8 +139,7 @@ class _CreateAccountState extends State<CreateAccount> {
                                 .headlineLarge
                                 ?.copyWith(
                                   color: Color(0xFF38A3A5),
-                                  fontFamily:
-                                      GoogleFonts.anekGurmukhi().fontFamily,
+                                  fontFamily: GoogleFonts.poppins().fontFamily,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 40.0,
                                 ),
@@ -170,7 +168,7 @@ class _CreateAccountState extends State<CreateAccount> {
                           isPassword: false,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your username';
+                              return 'Please enter your phone number';
                             } else if (value.length != 10) {
                               return 'Must be 10 digits';
                             }
@@ -178,36 +176,9 @@ class _CreateAccountState extends State<CreateAccount> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _buildLabelText(context, "Password"),
-                            Row(children: [
-                              IconButton(
-                                icon: Icon(
-                                  color: Color(0xFF838181),
-                                  _isPasswordVisible
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _isPasswordVisible = !_isPasswordVisible;
-                                  });
-                                },
-                              ),
-                              Text(
-                                _isPasswordVisible ? 'Unhide' : 'Hide',
-                                style: TextStyle(
-                                  color: const Color(0xFF838181),
-                                  fontSize: 16,
-                                ),
-                              )
-                            ]),
-                          ],
-                        ),
+                        _buildLabelText(context, "Role Requested"),
                         const SizedBox(height: 2),
-                        _buildPasswordField(),
+                        _buildRoleDropdown(), // Dropdown for role selection
                         const SizedBox(height: 40),
                         Center(
                           child: SizedBox(
@@ -215,14 +186,17 @@ class _CreateAccountState extends State<CreateAccount> {
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xFF38A3A5),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
                               onPressed: _signUp,
                               child: Text(
                                 "Sign Up",
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 25,
-                                  fontFamily: GoogleFonts.signika().fontFamily,
+                                  fontSize: 20,
+                                  fontFamily: GoogleFonts.poppins().fontFamily,
                                 ),
                               ),
                             ),
@@ -232,105 +206,53 @@ class _CreateAccountState extends State<CreateAccount> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: constraints.maxHeight > 400
-                      ? constraints.maxHeight - 400
-                      : 0,
-                  child: Stack(
-                    children: [
-                      ClipPath(
-                        clipper: BottomWaveClipper(),
-                        child: Container(
-                          width: double.infinity,
-                          color: Color(0xFFC7F9F6),
-                        ),
-                      ),
-                      Positioned(
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          child: Column(children: [
-                            Image.asset(
-                              'assets/image.png',
-                              height: 275,
-                              fit: BoxFit.contain,
-                            ),
-                            Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SizedBox(
-                                    height: 48.0,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.white,
-                                      ),
-                                      onPressed: () {},
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            "Sign in with ",
-                                            style: TextStyle(
-                                              color: Color(0xFF38A3A5),
-                                              fontSize: 20,
-                                              fontFamily: GoogleFonts.signika()
-                                                  .fontFamily,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Image.asset(
-                                            'assets/google_logo.png',
-                                            height: 30.0,
-                                            width: 30.0,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 30),
-                                  RichText(
-                                    text: TextSpan(
-                                      text: 'Already have an account? ',
-                                      style: TextStyle(
-                                        color: const Color(0xFF38A3A5),
-                                        fontSize: 18,
-                                        fontFamily:
-                                            GoogleFonts.robotoFlex().fontFamily,
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text: 'Log in',
-                                          style: TextStyle(
-                                            color: const Color(0xFF296685),
-                                            fontWeight: FontWeight.normal,
-                                            fontFamily: GoogleFonts.robotoFlex()
-                                                .fontFamily,
-                                          ),
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        Login()),
-                                              );
-                                            },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ])),
-                    ],
-                  ),
-                ),
               ],
             ),
           );
         },
+      ),
+    );
+  }
+
+  // Dropdown for selecting role
+  Widget _buildRoleDropdown() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: DropdownButtonFormField<String>(
+          value: _selectedRole,
+          onChanged: (String? newValue) {
+            setState(() {
+              _selectedRole = newValue;
+            });
+          },
+          items: ['Student', 'Manager']
+              .map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(value),
+              ),
+            );
+          }).toList(),
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          ),
+        ),
       ),
     );
   }
@@ -343,7 +265,7 @@ class _CreateAccountState extends State<CreateAccount> {
         style: TextStyle(
           color: Color(0xFF838181),
           fontSize: 16,
-          fontFamily: GoogleFonts.roboto().fontFamily,
+          fontFamily: GoogleFonts.poppins().fontFamily,
         ),
       ),
     );
@@ -371,7 +293,7 @@ class _CreateAccountState extends State<CreateAccount> {
         child: TextFormField(
           controller: controller,
           cursorColor: Color(0xFF838181),
-          obscureText: isPassword ? !_isPasswordVisible : false,
+          obscureText: isPassword,
           decoration: const InputDecoration(
             border: InputBorder.none,
             contentPadding:
@@ -380,29 +302,6 @@ class _CreateAccountState extends State<CreateAccount> {
           validator: validator,
         ),
       ),
-    );
-  }
-
-  Widget _buildPasswordField() {
-    return _buildProjectedTextFormField(
-      controller: _passwordController,
-      isPassword: true,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter your password';
-        } else if (value.length < 8) {
-          return 'Password must be at least 8 characters long';
-        } else if (!RegExp(r'(?=.*[a-z])').hasMatch(value)) {
-          return 'Password must contain at least one lowercase letter';
-        } else if (!RegExp(r'(?=.*[A-Z])').hasMatch(value)) {
-          return 'Password must contain at least one uppercase letter';
-        } else if (!RegExp(r'(?=.*\d)').hasMatch(value)) {
-          return 'Password must contain at least one digit';
-        } else if (!RegExp(r'(?=.*[!@#\$&*~])').hasMatch(value)) {
-          return 'Password must contain at least one special character';
-        }
-        return null;
-      },
     );
   }
 }

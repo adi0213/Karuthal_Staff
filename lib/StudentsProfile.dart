@@ -33,11 +33,6 @@ class _ProfilePage2State extends State<ProfilePage2> {
             color: Color(0xFF60CAD8),
             onPressed: () {},
           ),
-          IconButton(
-            icon: Icon(Icons.account_circle),
-            color: Color(0xFF60CAD8),
-            onPressed: () {},
-          ),
         ],
       ),
       body: Stack(

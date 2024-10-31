@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
-  final Map<String,dynamic> details;
+  final Map<String, dynamic> details;
   final int userOption;
-  const ProfilePage({super.key, required this.details, required this.userOption});
+  const ProfilePage(
+      {super.key, required this.details, required this.userOption});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -12,7 +13,9 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
-    var name = "${widget.details['registeredUser']['firstName']}" != "null" ? "${widget.details['registeredUser']['firstName']} ${widget.details['registeredUser']['lastName']}" : "Unknown";
+    var name = "${widget.details['registeredUser']['firstName']}" != "null"
+        ? "${widget.details['registeredUser']['firstName']} ${widget.details['registeredUser']['lastName']}"
+        : "Unknown";
 
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -22,9 +25,11 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.menu),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back),
           color: Color(0xFF60CAD8),
-          onPressed: () {},
         ),
         actions: [
           IconButton(
@@ -34,11 +39,6 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           IconButton(
             icon: Icon(Icons.settings),
-            color: Color(0xFF60CAD8),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.account_circle),
             color: Color(0xFF60CAD8),
             onPressed: () {},
           ),
@@ -78,13 +78,6 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: EdgeInsets.only(left: 30),
               child: Row(
                 children: [
-                  ElevatedButton(
-                    onPressed: (){
-                      Navigator.pop(context);
-                    },
-                    child: Icon(Icons.arrow_left)
-                  ),
-                  SizedBox(width: 10,),
                   Text(
                     "Profile Details",
                     style: TextStyle(
@@ -136,18 +129,30 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget buildDetails(int op){
-    if(op==1){
+  Widget buildDetails(int op) {
+    if (op == 1) {
       // Customer
       var customerId = "${widget.details['customerId']}";
       var email = "${widget.details['registeredUser']['email']}";
-      var mobile = "${widget.details['registeredUser']['mobile']}" != "null" ? "${widget.details['registeredUser']['mobile']}" : "Unknown";
+      var mobile = "${widget.details['registeredUser']['mobile']}" != "null"
+          ? "${widget.details['registeredUser']['mobile']}"
+          : "Unknown";
       var username = "${widget.details['registeredUser']['username']}";
-      var fName = "${widget.details['registeredUser']['firstName']}" != "null" ? "${widget.details['firstName']}" : "Unknown";
-      var lName = "${widget.details['registeredUser']['lastName']}" != "null" ? "${widget.details['lastName']}" : "Unknown";
-      var job = "${widget.details['job']}";
-      var city = "${widget.details['city']}";
-      var country = "${widget.details['country']['name']}";
+      var fName = "${widget.details['registeredUser']['firstName']}" != "null"
+          ? "${widget.details['firstName']}"
+          : "Unknown";
+      var lName = "${widget.details['registeredUser']['lastName']}" != "null"
+          ? "${widget.details['lastName']}"
+          : "Unknown";
+      var job = "${widget.details['job']}" != "null"
+          ? "${widget.details['job']}"
+          : "Unknown";
+      var city = "${widget.details['city']}" != "null"
+          ? "${widget.details['city']}"
+          : "Unknown";
+      var country = "${widget.details['country']}" != "null"
+          ? "${widget.details['country']}"
+          : "Unknown";
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -170,20 +175,31 @@ class _ProfilePageState extends State<ProfilePage> {
           WidgetBuilder.buildTextField('Country', country),
         ],
       );
-    }
-    else if(op==2){
+    } else if (op == 2) {
       // Student
       var studentId = "${widget.details['studentId']}";
       var email = "${widget.details['registeredUser']['email']}";
-      var mobile = "${widget.details['registeredUser']['mobile']}" != "null" ? "${widget.details['registeredUser']['mobile']}" : "Unknown";
+      var mobile = "${widget.details['registeredUser']['mobile']}" != "null"
+          ? "${widget.details['registeredUser']['mobile']}"
+          : "Unknown";
       var username = "${widget.details['registeredUser']['username']}";
-      var fName = "${widget.details['registeredUser']['firstName']}" != "null" ? "${widget.details['firstName']}" : "Unknown";
-      var lName = "${widget.details['registeredUser']['lastName']}" != "null" ? "${widget.details['lastName']}" : "Unknown";
+      var fName = "${widget.details['registeredUser']['firstName']}" != "null"
+          ? "${widget.details['firstName']}"
+          : "Unknown";
+      var lName = "${widget.details['registeredUser']['lastName']}" != "null"
+          ? "${widget.details['lastName']}"
+          : "Unknown";
       var course = "${widget.details['course']}";
       var age = "${widget.details['age']}";
-      var gender = "${widget.details['gender']}" != "null" ? "${widget.details['gender']}" : "Unknown";
-      var address = "${widget.details['registeredUser']['address']}" != "null" ? "${widget.details['registeredUser']['address']}" : "Unknown";
-      var city = "${widget.details['registeredUser']['city']}" != "null" ? "${widget.details['registeredUser']['city']}" : "Unknown";
+      var gender = "${widget.details['gender']}" != "null"
+          ? "${widget.details['gender']}"
+          : "Unknown";
+      var address = "${widget.details['registeredUser']['address']}" != "null"
+          ? "${widget.details['registeredUser']['address']}"
+          : "Unknown";
+      var city = "${widget.details['registeredUser']['city']}" != "null"
+          ? "${widget.details['registeredUser']['city']}"
+          : "Unknown";
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -210,18 +226,30 @@ class _ProfilePageState extends State<ProfilePage> {
           WidgetBuilder.buildTextField('City', city),
         ],
       );
-    }
-    else if(op==3){
+    } else if (op == 3) {
       // Manager
       var managerId = "${widget.details['managerId']}";
       var email = "${widget.details['registeredUser']['email']}";
-      var mobile = "${widget.details['registeredUser']['mobile']}" != "null" ? "${widget.details['registeredUser']['mobile']}" : "Unknown";
+      var mobile = "${widget.details['registeredUser']['mobile']}" != "null"
+          ? "${widget.details['registeredUser']['mobile']}"
+          : "Unknown";
       var username = "${widget.details['registeredUser']['username']}";
-      var fName = "${widget.details['registeredUser']['firstName']}" != "null" ? "${widget.details['firstName']}" : "Unknown";
-      var lName = "${widget.details['registeredUser']['lastName']}" != "null" ? "${widget.details['lastName']}" : "Unknown";
-      var roles = "${widget.details['registeredUser']['assignedRoles']}" != "null" ? "${widget.details['gender']}" : "Unknown";
-      var address = "${widget.details['registeredUser']['address']}" != "null" ? "${widget.details['registeredUser']['address']}" : "Unknown";
-      var city = "${widget.details['registeredUser']['city']}" != "null" ? "${widget.details['registeredUser']['city']}" : "Unknown";
+      var fName = "${widget.details['registeredUser']['firstName']}" != "null"
+          ? "${widget.details['firstName']}"
+          : "Unknown";
+      var lName = "${widget.details['registeredUser']['lastName']}" != "null"
+          ? "${widget.details['lastName']}"
+          : "Unknown";
+      var roles =
+          "${widget.details['registeredUser']['assignedRoles']}" != "null"
+              ? "${widget.details['gender']}"
+              : "Unknown";
+      var address = "${widget.details['registeredUser']['address']}" != "null"
+          ? "${widget.details['registeredUser']['address']}"
+          : "Unknown";
+      var city = "${widget.details['registeredUser']['city']}" != "null"
+          ? "${widget.details['registeredUser']['city']}"
+          : "Unknown";
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -244,17 +272,17 @@ class _ProfilePageState extends State<ProfilePage> {
           WidgetBuilder.buildTextField('City', city),
         ],
       );
-    }
-    else{
+    } else {
       return SizedBox.shrink();
     }
   }
 }
 
 class OwnProfilePage extends StatefulWidget {
-  final Map<String,dynamic> details;
+  final Map<String, dynamic> details;
   final int userOption;
-  const OwnProfilePage({super.key, required this.details, required this.userOption});
+  const OwnProfilePage(
+      {super.key, required this.details, required this.userOption});
 
   @override
   State<OwnProfilePage> createState() => _OwnProfilePageState();
@@ -263,7 +291,9 @@ class OwnProfilePage extends StatefulWidget {
 class _OwnProfilePageState extends State<OwnProfilePage> {
   @override
   Widget build(BuildContext context) {
-    var name = "${widget.details['firstName']}" != "null" ? "${widget.details['firstName']} ${widget.details['lastName']}" : "Unknown";
+    var name = "${widget.details['firstName']}" != "null"
+        ? "${widget.details['firstName']} ${widget.details['lastName']}"
+        : "Unknown";
 
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -273,9 +303,11 @@ class _OwnProfilePageState extends State<OwnProfilePage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.menu),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back),
           color: Color(0xFF60CAD8),
-          onPressed: () {},
         ),
         actions: [
           IconButton(
@@ -285,11 +317,6 @@ class _OwnProfilePageState extends State<OwnProfilePage> {
           ),
           IconButton(
             icon: Icon(Icons.settings),
-            color: Color(0xFF60CAD8),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.account_circle),
             color: Color(0xFF60CAD8),
             onPressed: () {},
           ),
@@ -329,13 +356,6 @@ class _OwnProfilePageState extends State<OwnProfilePage> {
               padding: EdgeInsets.only(left: 30),
               child: Row(
                 children: [
-                  ElevatedButton(
-                    onPressed: (){
-                      Navigator.pop(context);
-                    },
-                    child: Icon(Icons.arrow_left)
-                  ),
-                  SizedBox(width: 10,),
                   Text(
                     "Profile Details",
                     style: TextStyle(
@@ -387,15 +407,21 @@ class _OwnProfilePageState extends State<OwnProfilePage> {
     );
   }
 
-  Widget buildDetails(int op){
-    if(op==1){
+  Widget buildDetails(int op) {
+    if (op == 1) {
       // Customer
       var customerId = "${widget.details['customerId']}";
       var email = "${widget.details['registeredUser']['email']}";
-      var mobile = "${widget.details['registeredUser']['mobile']}" != "null" ? "${widget.details['registeredUser']['mobile']}" : "Unknown";
+      var mobile = "${widget.details['registeredUser']['mobile']}" != "null"
+          ? "${widget.details['registeredUser']['mobile']}"
+          : "Unknown";
       var username = "${widget.details['registeredUser']['username']}";
-      var fName = "${widget.details['registeredUser']['firstName']}" != "null" ? "${widget.details['firstName']}" : "Unknown";
-      var lName = "${widget.details['registeredUser']['lastName']}" != "null" ? "${widget.details['lastName']}" : "Unknown";
+      var fName = "${widget.details['registeredUser']['firstName']}" != "null"
+          ? "${widget.details['firstName']}"
+          : "Unknown";
+      var lName = "${widget.details['registeredUser']['lastName']}" != "null"
+          ? "${widget.details['lastName']}"
+          : "Unknown";
       var job = "${widget.details['job']}";
       var city = "${widget.details['city']}";
       var country = "${widget.details['country']['name']}";
@@ -421,20 +447,29 @@ class _OwnProfilePageState extends State<OwnProfilePage> {
           WidgetBuilder.buildTextField('Country', country),
         ],
       );
-    }
-    else if(op==2){
+    } else if (op == 2) {
       // Student
       var studentId = "${widget.details['studentId']}";
       var email = "${widget.details['email']}";
-      var mobile = "${widget.details['mobile']}" != "null" ? "${widget.details['registeredUser']['mobile']}" : "Unknown";
+      var mobile = "${widget.details['mobile']}" != "null"
+          ? "${widget.details['registeredUser']['mobile']}"
+          : "Unknown";
       var username = "${widget.details['username']}";
-      var fName = "${widget.details['firstName']}" != "null" ? "${widget.details['firstName']}" : "Unknown";
-      var lName = "${widget.details['lastName']}" != "null" ? "${widget.details['lastName']}" : "Unknown";
+      var fName = "${widget.details['firstName']}" != "null"
+          ? "${widget.details['firstName']}"
+          : "Unknown";
+      var lName = "${widget.details['lastName']}" != "null"
+          ? "${widget.details['lastName']}"
+          : "Unknown";
       // var course = "${widget.details['course']}";
       // var age = "${widget.details['age']}";
       // var gender = "${widget.details['gender']}" != "null" ? "${widget.details['gender']}" : "Unknown";
-      var address = "${widget.details['address']}" != "null" ? "${widget.details['registeredUser']['address']}" : "Unknown";
-      var city = "${widget.details['city']}" != "null" ? "${widget.details['registeredUser']['city']}" : "Unknown";
+      var address = "${widget.details['address']}" != "null"
+          ? "${widget.details['registeredUser']['address']}"
+          : "Unknown";
+      var city = "${widget.details['city']}" != "null"
+          ? "${widget.details['registeredUser']['city']}"
+          : "Unknown";
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -461,19 +496,30 @@ class _OwnProfilePageState extends State<OwnProfilePage> {
           WidgetBuilder.buildTextField('City', city),
         ],
       );
-    }
-    else if(op==3){
+    } else if (op == 3) {
       // Manager
       var email = "${widget.details['email']}";
-      var mobile = "${widget.details['mobile']}" != "null" ? "${widget.details['registeredUser']['mobile']}" : "Unknown";
+      var mobile = "${widget.details['mobile']}" != "null"
+          ? "${widget.details['registeredUser']['mobile']}"
+          : "Unknown";
       var username = "${widget.details['username']}";
-      var fName = "${widget.details['firstName']}" != "null" ? "${widget.details['firstName']}" : "Unknown";
-      var lName = "${widget.details['lastName']}" != "null" ? "${widget.details['lastName']}" : "Unknown";
-      var roles = "${widget.details['assignedRoles']}" != "null" ? "${widget.details['assignedRoles']}" as String : "Unknown";
-      var address = "${widget.details['address']}" != "null" ? "${widget.details['registeredUser']['address']}" : "Unknown";
-      var city = "${widget.details['city']}" != "null" ? "${widget.details['registeredUser']['city']}" : "Unknown";
+      var fName = "${widget.details['firstName']}" != "null"
+          ? "${widget.details['firstName']}"
+          : "Unknown";
+      var lName = "${widget.details['lastName']}" != "null"
+          ? "${widget.details['lastName']}"
+          : "Unknown";
+      var roles = "${widget.details['assignedRoles']}" != "null"
+          ? "${widget.details['assignedRoles']}" as String
+          : "Unknown";
+      var address = "${widget.details['address']}" != "null"
+          ? "${widget.details['registeredUser']['address']}"
+          : "Unknown";
+      var city = "${widget.details['city']}" != "null"
+          ? "${widget.details['registeredUser']['city']}"
+          : "Unknown";
       print(widget.details['assignedRoles']);
-      roles = roles.substring(1,roles.length-1);
+      roles = roles.substring(1, roles.length - 1);
       print(roles);
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -495,14 +541,13 @@ class _OwnProfilePageState extends State<OwnProfilePage> {
           WidgetBuilder.buildTextField('City', city),
         ],
       );
-    }
-    else{
+    } else {
       return SizedBox.shrink();
     }
   }
 }
 
-class WidgetBuilder{
+class WidgetBuilder {
   static buildTextFieldRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(top: 15, bottom: 10),
@@ -557,8 +602,6 @@ class WidgetBuilder{
     );
   }
 }
-
-
 
 class ClippingClass extends CustomClipper<Path> {
   @override

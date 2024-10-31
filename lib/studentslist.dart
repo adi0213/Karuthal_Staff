@@ -5,17 +5,16 @@ import 'dart:convert';
 
 class Studentslist extends StatefulWidget {
   final String token;
-  const Studentslist({super.key,required this.token});
+  const Studentslist({super.key, required this.token});
   @override
   State<Studentslist> createState() => _StudentslistState();
 }
 
 class _StudentslistState extends State<Studentslist> {
-
   late Future<List> Studentslist;
   List students = [];
 
-  Future<List> getStudentDetails() async{
+  Future<List> getStudentDetails() async {
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${widget.token}'
@@ -28,7 +27,7 @@ class _StudentslistState extends State<Studentslist> {
     return customerDetailsList['result'];
   }
 
-  void initState(){
+  void initState() {
     super.initState();
     Studentslist = getStudentDetails();
   }
@@ -45,38 +44,13 @@ class _StudentslistState extends State<Studentslist> {
             color: Colors.white,
           ),
         ),
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: Icon(Icons.menu, color: Colors.white),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
           },
-        ),
-        actions: [
-          ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Icon(Icons.arrow_left))
-        ],
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            ListTile(
-                title: const Row(
-                  children: [
-                    Icon(Icons.arrow_left),
-                    Text('Go back'),
-                  ],
-                ),
-                textColor: Colors.teal,
-                iconColor: Colors.teal,
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-              ),
-          ],
+          icon: Icon(Icons.arrow_back),
+          color: Color.fromARGB(255, 255, 255, 255),
         ),
       ),
       body: Column(
@@ -101,12 +75,9 @@ class _StudentslistState extends State<Studentslist> {
                 padding: EdgeInsets.symmetric(horizontal: 12),
                 child: TextField(
                   decoration: InputDecoration(
-                    icon: Icon(Icons.search),
-                    hintText: "Search by Username",
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none
-                    )
-                  ),
+                      icon: Icon(Icons.search),
+                      hintText: "Search by Username",
+                      border: OutlineInputBorder(borderSide: BorderSide.none)),
                   onChanged: searchPerson,
                 ),
               ),
@@ -130,7 +101,7 @@ class _StudentslistState extends State<Studentslist> {
 
   Future<List> _filterCustomers(String query) async {
     if (query.isEmpty) {
-      return await getStudentDetails(); 
+      return await getStudentDetails();
     }
 
     final filteredCustomers = (await getStudentDetails()).where((customer) {
@@ -147,13 +118,11 @@ class _StudentslistState extends State<Studentslist> {
       future: Studentslist,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator()); 
-        }
-        else if (snapshot.hasError) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
           return Center(child: Text("Error: ${snapshot.error}"));
-        }
-        else if (snapshot.hasData) {
-          students = snapshot.data ?? []; 
+        } else if (snapshot.hasData) {
+          students = snapshot.data ?? [];
           if (students.isEmpty) {
             return Center(child: Text("No customers available"));
           }
@@ -167,15 +136,16 @@ class _StudentslistState extends State<Studentslist> {
                     onTap: () => {
                       print(student),
                       Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context)=> ProfilePage(details: student, userOption: 2))
-                      )
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ProfilePage(details: student, userOption: 2)))
                     },
                     child: buildServiceItem(
-                      student['registeredUser']['username']!,
-                      student['registeredUser']['email']!,
-                      student['age']!,
-                      student['course']!,
+                      student['registeredUser']['username'],
+                      student['registeredUser']['email'],
+                      student['age'],
+                      student['course'],
                     ),
                   ),
                   if (index < students.length - 1) Divider(height: 2),
@@ -184,15 +154,16 @@ class _StudentslistState extends State<Studentslist> {
             },
           );
         }
-        return Center(child: Text("No data available")); 
+        return Center(child: Text("No data available"));
       },
     );
   }
 
-
   Widget buildServiceItem(
-      String username, String email, int age, String course) {
-        print('$username ,$email ,$age ,$course');
+      String username, String email, int? age, String? course) {
+    print('$username ,$email ,$age ,$course');
+    int finalAge = age ?? -1;
+    String finalCourse = course ?? "NA";
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
       child: Row(
@@ -221,7 +192,8 @@ class _StudentslistState extends State<Studentslist> {
                     ),
                     SizedBox(width: 4),
                     SizedBox(width: 4),
-                    Text('$age, $course',style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    Text('$finalAge, $finalCourse',
+                        style: TextStyle(fontSize: 12, color: Colors.grey)),
                   ],
                 ),
                 SizedBox(height: 2),
