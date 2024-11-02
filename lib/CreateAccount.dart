@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:chilla_staff/Login.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -200,6 +201,36 @@ class _CreateAccountState extends State<CreateAccount> {
                                 ),
                               ),
                             ),
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        RichText(
+                          text: TextSpan(
+                            text: 'Already have an account? ',
+                            style: TextStyle(
+                              color: const Color(0xFF38A3A5),
+                              fontSize: 18,
+                              fontFamily: GoogleFonts.robotoFlex().fontFamily,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'Log in',
+                                style: TextStyle(
+                                  color: const Color(0xFF296685),
+                                  fontWeight: FontWeight.normal,
+                                  fontFamily:
+                                      GoogleFonts.robotoFlex().fontFamily,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Login()),
+                                    );
+                                  },
+                              ),
+                            ],
                           ),
                         ),
                       ],

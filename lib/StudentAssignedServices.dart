@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'StudentDrawer.dart';
 import 'common/bookingrequest_cards.dart';
 import 'global_api_constants.dart';
 
@@ -143,17 +142,16 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.account_circle)),
-        ],
-      ),
-      drawer: StudentDrawer(
-        details: widget.details,
-        token: widget.details['authtoken'] ?? '',
-        studentId: widget.details['studentId'] ?? 0,
+        backgroundColor: Colors.teal,
+        title: const Text('Booking Details'),
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back),
+          color: Color.fromARGB(255, 255, 255, 255),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -181,18 +179,6 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context); // Navigate back to the dashboard
-                    },
-                    child: const Text(
-                      'Go Back to Dashboard',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
