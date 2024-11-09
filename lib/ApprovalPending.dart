@@ -56,7 +56,7 @@ class _ApprovalPendingState extends State<ApprovalPending> {
         print("Exited with ${response.statusCode}");
       }
     } catch (e) {
-      print("Except $e");
+      // print("Except $e");
     }
   }
 
@@ -85,7 +85,6 @@ class _ApprovalPendingState extends State<ApprovalPending> {
           color: Color.fromARGB(255, 255, 255, 255),
         ),
       ),
-      
       body: Center(child: getList()),
     );
   }
