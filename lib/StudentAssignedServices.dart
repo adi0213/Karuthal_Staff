@@ -9,11 +9,13 @@ class StudentAssignedServices extends StatefulWidget {
   final String token;
   final int studentId;
   final Map<String, dynamic> details;
-  const StudentAssignedServices(
-      {super.key,
-      required this.token,
-      required this.studentId,
-      required this.details});
+
+  const StudentAssignedServices({
+    super.key,
+    required this.token,
+    required this.studentId,
+    required this.details,
+  });
 
   @override
   State<StudentAssignedServices> createState() =>
@@ -24,12 +26,12 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
   Map<String, dynamic>? currentBookingDetails;
   List<int> bookingRequestIds = [];
   int currentIndex = 0;
+  bool _noRecords = false; // Flag for no records found
+  bool _hasError = false; // Flag for any errors encountered
 
   @override
   void initState() {
     super.initState();
-    print(
-        'Initialized StudentAssignedServices with studentId: ${widget.studentId}');
     fetchBookingDetails();
   }
 
@@ -41,13 +43,15 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
         await getBookingDetails(bookingRequestIds[currentIndex]);
       } else {
         setState(() {
-          currentBookingDetails = null;
+          _noRecords = true; // Set flag if no bookings are found
         });
       }
     } catch (e) {
-      print("Error: $e");
+      print("Error fetching booking details: $e");
+      setState(() {
+        _hasError = true;
+      });
     }
-    print('return fetchBookingDetails');
   }
 
   Future<List<int>> fetchAssignments() async {
@@ -56,40 +60,33 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
       'Authorization': 'Bearer ${widget.token}',
     };
 
-    try {
-      final response = await http.get(
-        Uri.parse('${getBookingRequestsUrl()}/student/${widget.studentId}'),
-        headers: headers,
-      );
+    final response = await http.get(
+      Uri.parse('${getBookingRequestsUrl()}/student/${widget.studentId}'),
+      headers: headers,
+    );
 
-      if (response.statusCode == 200) {
-        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
-        if (jsonResponse['status'] == 200) {
-          List<dynamic>? bookingRequests = jsonResponse['result'];
-
-          // Check if bookingRequests is null or empty
-          if (bookingRequests == null || bookingRequests.isEmpty) {
-            print('No booking requests available');
-            return []; // Return an empty list when there are no results
-          }
-
-          List<int> bookingRequestIds = bookingRequests
-              .map((bookingRequest) => bookingRequest['id'] as int)
-              .toList();
-
-          return bookingRequestIds;
-
-        } else {
-          throw Exception(
-              'Failed to retrieve booking requests: ${jsonResponse['message']}');
-        }
+      if (jsonResponse['status'] == 200) {
+        List<dynamic> bookingRequests = jsonResponse['result'];
+        List<int> bookingRequestIds = bookingRequests
+            .map((bookingRequest) => bookingRequest['id'] as int)
+            .toList();
+        return bookingRequestIds;
       } else {
-        throw Exception('Failed to load assignments');
+        print("Server error: ${jsonResponse['message']}");
+        setState(() {
+          _noRecords = true; // No records found
+        });
+        return [];
       }
-    } catch (e) {
-      print('Error fetching assignments: $e');
-      return []; // Return an empty list in case of an error
+    } else {
+      print("Failed to load assignments: ${response.reasonPhrase}");
+      setState(() {
+        _hasError = true;
+      });
+      return [];
     }
   }
 
@@ -107,20 +104,22 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
 
       if (response.statusCode == 200) {
         final bookingDetailsResponse = jsonDecode(response.body);
-        print('---- bookingDetails: ${bookingDetailsResponse['result']}');
-
         setState(() {
-          // Directly assign the result to currentBookingDetails
           currentBookingDetails = bookingDetailsResponse['result'];
+          _hasError = false;
         });
       } else {
         final errorDetails = jsonDecode(response.body);
-        throw Exception(
-            'Failed to load booking details: ${errorDetails['message']}');
+        print("Error loading booking details: ${errorDetails['message']}");
+        setState(() {
+          _hasError = true;
+        });
       }
     } catch (e) {
-      print('Error fetching booking details: $e');
-      throw Exception('An error occurred while fetching booking details: $e');
+      print("Network or unexpected error occurred: $e");
+      setState(() {
+        _hasError = true;
+      });
     }
   }
 
@@ -138,7 +137,7 @@ class _StudentAssignedServicesState extends State<StudentAssignedServices> {
     }
   }
 
- @override
+  @override
 Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
@@ -157,88 +156,96 @@ Widget build(BuildContext context) {
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              color: Colors.teal,
-              width: MediaQuery.of(context).size.width,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        style: const TextStyle(fontSize: 20, color: Colors.white),
-                        children: [
-                          const TextSpan(text: "Booking Details: "),
-                          TextSpan(
-                            text: (currentBookingDetails != null && currentBookingDetails!['id'] != null)
-                                ? currentBookingDetails!['id'].toString()
-                                : "N/A",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+        // Header
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          color: Colors.teal,
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.arrow_back),
+                color: const Color.fromARGB(255, 255, 255, 255),
               ),
-            ),
-
-        if (bookingRequestIds.isEmpty && currentBookingDetails == null)
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                'No booking requests available.',
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
-          )
-        else if (currentBookingDetails == null)
-          const Center(child: CircularProgressIndicator())
-        else
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Pagination Controls
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              Expanded(
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(fontSize: 20, color: Colors.white),
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_left),
-                        onPressed: previousBooking,
-                      ),
-                      Text(
-                        'Page ${currentIndex + 1} of ${bookingRequestIds.length}',
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.arrow_right),
-                        onPressed: nextBooking,
-                      ),
+                      const TextSpan(text: "Booking Details"),
+                      if (currentBookingDetails != null &&
+                          currentBookingDetails?['id'] != null)
+                        TextSpan(
+                          text: " of Booking ID: ${currentBookingDetails!['id']}",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                     ],
                   ),
-
-                  const SizedBox(height: 16),
-                  buildCustomerDetailsCard(
-                      currentBookingDetails!['enrolledByCustomer'], context),
-
-                  const SizedBox(height: 16),
-                  buildPatientList(
-                      currentBookingDetails!['requestedFor'], context),
-
-                  const SizedBox(height: 16),
-                  buildServicesRequestedCard(
-                      currentBookingDetails!['requestedServices'], context),
-                ],
+                ),
               ),
-            ),
+              
+            ],
           ),
+        ),
+        
+        const SizedBox(height: 16),
+
+        // Conditional content
+        Expanded(
+          child: Center(
+            child: _hasError
+                ? const Text("An error occurred. Please try again.")
+                : _noRecords
+                    ? const Text("No booking requests found.")
+                    : currentBookingDetails == null
+                        ? const CircularProgressIndicator()
+                        : SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Pagination Controls
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.arrow_left),
+                                      onPressed: previousBooking,
+                                    ),
+                                    Text(
+                                      'Page ${currentIndex + 1} of ${bookingRequestIds.length}',
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.arrow_right),
+                                      onPressed: nextBooking,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+
+                                // Display booking details
+                                buildCustomerDetailsCard(
+                                    currentBookingDetails!['enrolledByCustomer'],
+                                    context),
+                                const SizedBox(height: 16),
+                                buildPatientList(
+                                    currentBookingDetails!['requestedFor'],
+                                    context),
+                                const SizedBox(height: 16),
+                                buildServicesRequestedCard(
+                                    currentBookingDetails!['requestedServices'],
+                                    context),
+                              ],
+                            ),
+                          ),
+          ),
+        ),
       ],
     ),
   );
 }
-
 
 }
