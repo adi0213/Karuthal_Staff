@@ -50,6 +50,10 @@ linux/flutter/generated_*
 windows/flutter/generated_*
 macos/flutter/Generated*
 
+macos/
+linux/
+windows/
+
 
 
 # Ignore Linux build files
