@@ -114,6 +114,32 @@ class _LoginState extends State<Login> {
             );
           }
         }
+        else{
+          print(responseBody['status']);
+          if (responseBody['status'] == 401) {
+            print("Hello2");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Color(0xFF57CC99),
+              content: Text(
+                "${responseBody['message']}",
+                style: const TextStyle(color: Colors.black),
+              ),
+            ),
+          );
+        }
+        else if(responseBody['status'] == 403){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Color(0xFF57CC99),
+              content: Text(
+                "${responseBody['message']}",
+                style: const TextStyle(color: Colors.black),
+              ),
+            ),
+          );
+        }
+        }
       } else {
         print('Login failed with status code: ${response.statusCode}');
         print('Error message: ${response.body}');

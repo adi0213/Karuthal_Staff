@@ -87,10 +87,19 @@ Future<void> _fetchWorkLogs() async {
   @override
 Widget build(BuildContext context) {
   return Scaffold(
-    appBar: AppBar(
-      title: Text('Work Log History'),
-      backgroundColor: Colors.teal,
-    ),
+   
+     appBar: AppBar(
+          backgroundColor: Colors.teal,
+          title: const Text('Work Log History'),
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.arrow_back),
+            color: Colors.black,
+          ),
+        ),
     drawer: StudentDrawer(
       details: widget.details,
       token: widget.token,
@@ -102,7 +111,7 @@ Widget build(BuildContext context) {
           ? Center(
               child: Text(
                 'No work logs available',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+                style: TextStyle(fontSize: 18, color: Colors.teal),
               ),
             )
           : Column(

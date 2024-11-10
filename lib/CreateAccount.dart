@@ -1,7 +1,6 @@
 import 'dart:convert';
-import '/StaffRegistration.dart';
-import '/Login.dart';
-import '/design.dart';
+
+import 'package:chilla_staff/Login.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -24,80 +23,81 @@ class _CreateAccountState extends State<CreateAccount> {
   String? _selectedRole = 'Student'; // Default selected role
 
   Future<void> _signUp() async {
-  if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
-  String apiUrl = getSignupUrl();
+    String apiUrl = getSignupUrl();
 
-  final Map<String, dynamic> requestData = {
-    'mobile': _PhoneNumberController.text.trim(),
-    'email': _emailController.text.trim(),
-    'persona': _selectedRole!.toLowerCase(), // Sending selected role in lowercase
-  };
+    final Map<String, dynamic> requestData = {
+      'mobile': _PhoneNumberController.text.trim(),
+      'email': _emailController.text.trim(),
+      'persona':
+          _selectedRole!.toLowerCase(), // Sending selected role in lowercase
+    };
 
-  try {
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: json.encode(requestData),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode(requestData),
+      );
 
-    // Decode the response body
-    final responseData = json.decode(response.body);
+      // Decode the response body
+      final responseData = json.decode(response.body);
 
-    // Print the response data for debugging purposes
-    print('Response data: $responseData');
+      // Print the response data for debugging purposes
+      print('Response data: $responseData');
 
-    // Check if the 'status' field exists in the response
-    if (responseData['status'] == 200) {
-      print('Status 200: Account created successfully.');
-      // Show success dialog and navigate to UserWaitingPage
-      _showSuccessDialog('Account created successfully!', UserWaitingPage());
-    } else if (responseData['status'] == 406) {
-      print('Status 406: Username or email already taken.');
+      // Check if the 'status' field exists in the response
+      if (responseData['status'] == 200) {
+        print('Status 200: Account created successfully.');
+        // Show success dialog and navigate to UserWaitingPage
+        _showSuccessDialog('Account created successfully!', UserWaitingPage());
+      } else if (responseData['status'] == 406) {
+        print('Status 406: Username or email already taken.');
 
-      // Handle the specific error for username/email already taken
-      String errorMessage = responseData['message'] ?? 'An error occurred.';
-      print('Error message: $errorMessage');
+        // Handle the specific error for username/email already taken
+        String errorMessage = responseData['message'] ?? 'An error occurred.';
+        print('Error message: $errorMessage');
 
-      // Show error dialog with the specific message
-      _showErrorDialog(errorMessage);
-    } else {
-      print('Other status code: ${responseData['status']}');
-      // Handle other status codes
-      _showErrorDialog('Failed to create account. Please try again.');
+        // Show error dialog with the specific message
+        _showErrorDialog(errorMessage);
+      } else {
+        print('Other status code: ${responseData['status']}');
+        // Handle other status codes
+        _showErrorDialog('Failed to create account. Please try again.');
+      }
+    } catch (e) {
+      // Handle any exceptions or errors
+      print('Error occurred: $e');
+      _showErrorDialog('Error occurred. Please try again later.');
     }
-  } catch (e) {
-    // Handle any exceptions or errors
-    print('Error occurred: $e');
-    _showErrorDialog('Error occurred. Please try again later.');
   }
-}
 
-void _showSuccessDialog(String message, Widget page) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Success'),
-      content: Text(message),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(); // Close the dialog
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => page),
-            ); // Navigate to the new page
-          },
-          child: const Text('OK'),
-        ),
-      ],
-    ),
-  );
-}
-
+  void _showSuccessDialog(String message, Widget page) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Success'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => page),
+              ); // Navigate to the new page
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _showErrorDialog(String message) {
     showDialog(
@@ -201,6 +201,36 @@ void _showSuccessDialog(String message, Widget page) {
                                 ),
                               ),
                             ),
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        RichText(
+                          text: TextSpan(
+                            text: 'Already have an account? ',
+                            style: TextStyle(
+                              color: const Color(0xFF38A3A5),
+                              fontSize: 18,
+                              fontFamily: GoogleFonts.robotoFlex().fontFamily,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'Log in',
+                                style: TextStyle(
+                                  color: const Color(0xFF296685),
+                                  fontWeight: FontWeight.normal,
+                                  fontFamily:
+                                      GoogleFonts.robotoFlex().fontFamily,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Login()),
+                                    );
+                                  },
+                              ),
+                            ],
                           ),
                         ),
                       ],

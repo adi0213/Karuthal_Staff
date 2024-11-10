@@ -1,5 +1,5 @@
-const String baseUrl = 'http://104.237.9.211:8007/karuthal/api/v1';
-//const String baseUrl = 'http://localhost:8007/karuthal/api/v1';
+//const String baseUrl = 'http://104.237.9.211:8007/karuthal/api/v1';
+const String baseUrl = 'http://localhost:8007/karuthal/api/v1';
 
 String loginUrl() {
   return '$baseUrl/usermanagement/login';
@@ -47,19 +47,19 @@ String getUnifinishedWorkLogUrl(){
   return '$baseUrl/worklog/unfinished/student';
 }
 
-
 String getAssignStudentUrl(){
   return '$baseUrl/staff/assignstudents';
 }
 
+String getPendingRoleRequest(){
+  return '$baseUrl/rolerequest/pending';
+}
+
+String updatePendingRoleRequest(){
+  return '$baseUrl/rolerequest/update-status';
+}
 
 String getChangePasswordOtpUrl(){
   return '$baseUrl/email/sendpasswordchangeotp';
 }
-
-String getChangePasswordUrl(){
-  return '$baseUrl/';
-}
-
-
 

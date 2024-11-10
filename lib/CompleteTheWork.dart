@@ -114,10 +114,18 @@ class _CompleteWorkLogFormState extends State<CompleteWorkLogForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Complete Work Log'),
-        backgroundColor: Colors.teal,
-      ),
+     appBar: AppBar(
+          backgroundColor: Colors.teal,
+          title: const Text('Clock out - Complete work log'),
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.arrow_back),
+            color: Colors.black,
+          ),
+        ),
       drawer: StudentDrawer(
         details: widget.details,
         token: widget.token,
@@ -147,7 +155,13 @@ class _CompleteWorkLogFormState extends State<CompleteWorkLogForm> {
                   child: Text('Complete Work'),
                 ),
               ] else ...[
-                Text('No pending work log found.'),
+                
+                Center(
+                  child: Text(
+                    'No pending work log found.',
+                    style: TextStyle(fontSize: 18, color: Colors.teal),
+                  ),
+                ),
               ],
             ],
           ),

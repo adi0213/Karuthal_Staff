@@ -65,12 +65,8 @@ class _WorkLogFormState extends State<WorkLogForm> {
             _selectedBookingDetails = _bookingRequests.first;
           }
         });
-      } else {
-        throw Exception('Failed to retrieve booking requests: ${jsonResponse['message']}');
-      }
-    } else {
-      throw Exception('Failed to load booking requests');
-    }
+      } 
+    } 
   }
 
   void _submitForm() async {
@@ -124,13 +120,22 @@ class _WorkLogFormState extends State<WorkLogForm> {
     }
   }
 
+    
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Clock In - Work Log'),
-        backgroundColor: Colors.teal,
-      ),
+     appBar: AppBar(
+          backgroundColor: Colors.teal,
+          title: const Text('Clock in - work log'),
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.arrow_back),
+            color: Colors.black,
+          ),
+        ),
       drawer: StudentDrawer(
         details: widget.details,
         token: widget.token,
@@ -143,65 +148,79 @@ class _WorkLogFormState extends State<WorkLogForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Select Booking Request:'),
-              DropdownButtonFormField<int>(
-                isExpanded: true,
-                value: _selectedBookingRequests.isNotEmpty ? _selectedBookingRequests.first : null,
-                items: _bookingRequests.map((booking) {
-                  return DropdownMenuItem<int>(
-                    value: booking['id'],
-                    child: Text('Booking ID: ${booking['id']} - ${booking['description']}'),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedBookingRequests = value != null ? [value] : [];
-                    _selectedBookingDetails = _bookingRequests.firstWhere((booking) => booking['id'] == value);
-                  });
-                },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 10),
-              if (_selectedBookingDetails != null) ...[
-                Text(
-                  'Enrolled By:  '
-                  '${_selectedBookingDetails!['enrolledByCustomer']['registeredUser']['email']}',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  'Requested For:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                for (var patient in _selectedBookingDetails!['requestedFor'])
-                  Text(
-                    '${patient['firstName']} ${patient['lastName']}',
-                    style: TextStyle(fontSize: 16),
+              // Check if _selectedBookingDetails is null or empty before displaying the form elements
+              if (_selectedBookingDetails == null || _selectedBookingDetails!.isEmpty) ...[
+                // Show a message if there are no selected booking details
+                Center(
+                  child: Text(
+                    'No booking requests found for this student.',
+                    style: TextStyle(fontSize: 18, color: Colors.teal),
                   ),
-                SizedBox(height: 20),
-              ],
-              SizedBox(height: 10),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Work Description (Optional)',
-                  border: OutlineInputBorder(),
                 ),
-                maxLines: 3,
-                onSaved: (value) {
-                  _workDescription = value ?? '';
-                },
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _submitForm,
-                child: Text('Start Work'),
-              ),
+              ] else ...[
+                // Show the form elements only if _selectedBookingDetails is not null or empty
+                Text('Select Booking Request:'),
+                DropdownButtonFormField<int>(
+                  isExpanded: true,
+                  value: _selectedBookingRequests.isNotEmpty ? _selectedBookingRequests.first : null,
+                  items: _bookingRequests.map((booking) {
+                    return DropdownMenuItem<int>(
+                      value: booking['id'],
+                      child: Text('Booking ID: ${booking['id']} - ${booking['description']}'),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedBookingRequests = value != null ? [value] : [];
+                      _selectedBookingDetails = _bookingRequests.firstWhere((booking) => booking['id'] == value, orElse: () => null);
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 10),
+                if (_selectedBookingDetails != null) ...[
+                  Text(
+                    'Enrolled By:  '
+                    '${_selectedBookingDetails!['enrolledByCustomer']['registeredUser']['email']}',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'Requested For:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  for (var patient in _selectedBookingDetails!['requestedFor'])
+                    Text(
+                      '${patient['firstName']} ${patient['lastName']}',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  SizedBox(height: 20),
+                ],
+                SizedBox(height: 10),
+                TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Work Description (Optional)',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
+                  onSaved: (value) {
+                    _workDescription = value ?? '';
+                  },
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _submitForm,
+                  child: Text('Start Work'),
+                ),
+              ],
             ],
           ),
         ),
       ),
     );
   }
+
+  
 }

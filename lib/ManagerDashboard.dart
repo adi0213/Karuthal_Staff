@@ -1,12 +1,6 @@
-import 'package:chilla_staff/workHistory.dart';
 import 'package:flutter/material.dart';
 import 'common/ManagerDrawer.dart';
-import 'customerList.dart';
-import 'studentslist.dart';
-import 'managerList.dart';
-import 'Profile.dart';
-import 'calendar.dart';
-import 'AssignServices.dart';
+
 
 class Managerdashboard extends StatelessWidget {
   final String firstName;

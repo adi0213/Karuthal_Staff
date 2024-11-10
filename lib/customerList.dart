@@ -5,19 +5,18 @@ import 'Profile.dart';
 
 class CustomerList extends StatefulWidget {
   final String token;
-  const CustomerList({super.key,required this.token});
+  const CustomerList({super.key, required this.token});
   @override
   State<CustomerList> createState() => _CustomerListState();
 }
 
 class _CustomerListState extends State<CustomerList> {
-
   late Future<List> customerList;
   List customers = [];
 
   TextEditingController _searchQuery = TextEditingController();
 
-  Future<List> getCustomerDetails() async{
+  Future<List> getCustomerDetails() async {
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${widget.token}'
@@ -30,7 +29,7 @@ class _CustomerListState extends State<CustomerList> {
     return customerDetailsList['result'];
   }
 
-  void initState(){
+  void initState() {
     super.initState();
     customerList = getCustomerDetails();
   }
@@ -47,37 +46,32 @@ class _CustomerListState extends State<CustomerList> {
             color: Colors.white,
           ),
         ),
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: Icon(Icons.menu, color: Colors.white),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
           },
+          icon: Icon(Icons.arrow_back),
+          color: Color.fromARGB(255, 255, 255, 255),
         ),
-        actions: [
-          ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Icon(Icons.arrow_left))
-        ],
       ),
       drawer: Drawer(
         child: ListView(
           children: [
             ListTile(
-                title: const Row(
-                  children: [
-                    Icon(Icons.arrow_left),
-                    Text('Go back'),
-                  ],
-                ),
-                textColor: Colors.teal,
-                iconColor: Colors.teal,
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
+              title: const Row(
+                children: [
+                  Icon(Icons.arrow_left),
+                  Text('Go back'),
+                ],
               ),
+              textColor: Colors.teal,
+              iconColor: Colors.teal,
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+            ),
           ],
         ),
       ),
@@ -103,12 +97,9 @@ class _CustomerListState extends State<CustomerList> {
                 child: TextField(
                   controller: _searchQuery,
                   decoration: InputDecoration(
-                    icon: Icon(Icons.search),
-                    hintText: "Search by Name",
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none
-                    )
-                  ),
+                      icon: Icon(Icons.search),
+                      hintText: "Search by Name",
+                      border: OutlineInputBorder(borderSide: BorderSide.none)),
                   onChanged: searchPerson,
                 ),
               ),
@@ -123,19 +114,16 @@ class _CustomerListState extends State<CustomerList> {
     );
   }
 
-
   Widget getList() {
     return FutureBuilder<List>(
       future: customerList,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator()); 
-        }
-        else if (snapshot.hasError) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
           return Center(child: Text("Error: ${snapshot.error}"));
-        }
-        else if (snapshot.hasData) {
-          customers = snapshot.data ?? []; 
+        } else if (snapshot.hasData) {
+          customers = snapshot.data ?? [];
           if (customers.isEmpty) {
             return Center(child: Text("No customers available"));
           }
@@ -146,18 +134,21 @@ class _CustomerListState extends State<CustomerList> {
               return Column(
                 children: [
                   InkWell(
-                    onTap: (){
+                    onTap: () {
                       print(customer);
                       Navigator.push(
-                        context, 
-                        MaterialPageRoute(builder: (context)=> ProfilePage(details: customer, userOption: 1,))
-                      );
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfilePage(
+                                    details: customer,
+                                    userOption: 1,
+                                  )));
                     },
                     child: buildServiceItem(
-                      customer['registeredUser']['username']!,
-                      customer['registeredUser']['email']!,
-                      customer['city']!,
-                      customer['country']['name']!,
+                      customer['registeredUser']['username'],
+                      customer['registeredUser']['email'],
+                      customer['city'],
+                      customer['country'],
                     ),
                   ),
                   if (index < customers.length - 1) Divider(height: 2),
@@ -166,7 +157,7 @@ class _CustomerListState extends State<CustomerList> {
             },
           );
         }
-        return Center(child: Text("No data available")); 
+        return Center(child: Text("No data available"));
       },
     );
   }
@@ -180,7 +171,7 @@ class _CustomerListState extends State<CustomerList> {
 
   Future<List> _filterCustomers(String query) async {
     if (query.isEmpty) {
-      return await getCustomerDetails(); 
+      return await getCustomerDetails();
     }
 
     final filteredCustomers = (await getCustomerDetails()).where((customer) {
@@ -192,10 +183,10 @@ class _CustomerListState extends State<CustomerList> {
     return filteredCustomers;
   }
 
-
-
-  Widget buildServiceItem(String username, String email, String city, String country) {
+  Widget buildServiceItem(String username, String email, String? city, String? country) {
     print('$username ,$email ,$city ,$country');
+    String finalCity = city ?? "NA";
+    String finalCountry = country ?? "NA";
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
       child: Row(
@@ -225,7 +216,8 @@ class _CustomerListState extends State<CustomerList> {
                     SizedBox(width: 4),
                     Icon(Icons.location_on, size: 16, color: Colors.grey),
                     SizedBox(width: 4),
-                    Text('$city, $country',style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    Text('$finalCity, $finalCountry',
+                        style: TextStyle(fontSize: 12, color: Colors.grey)),
                   ],
                 ),
                 SizedBox(height: 2),
